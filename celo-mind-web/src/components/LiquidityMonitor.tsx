@@ -7,12 +7,14 @@ import { base, arbitrum, mantle, zkSync } from 'viem/chains';
 const XOC_TOKEN_ADDRESS = "0xa411c9Aa00E020e4f88Bc19996d29c5B7ADB4ACf"; // XOC on Base
 const MXNB_TOKEN_ADDRESS = "0xF197FFC28c23E0309B5559e7a166f2c6164C80aA"; // MXNB on Arbitrum
 const USDT_MANTLE_TOKEN_ADDRESS = "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE"; // USDT on Mantle
+const CMETH_TOKEN_ADDRESS = "0xE6829d9a7eE3040e1276Fa75293Bde931859e8fA"; // cmETH on Mantle
 const USDT_ZKSYNC_ERA_TOKEN_ADDRESS = "0x493257fD37EDB34451f62EDf8D2a0C418852bA4C"; // USDT on zkSync Era
 
 // Token decimals for formatting
 const XOC_DECIMALS = 18;
 const MXNB_DECIMALS = 6;
 const USDT_MANTLE_DECIMALS = 6;
+const CMETH_DECIMALS = 18;
 const USDT_ZKSYNC_ERA_DECIMALS = 6;
 
 // Standard ERC20 ABI for balance queries
@@ -154,6 +156,14 @@ export default function LiquidityMonitor() {
           decimals: USDT_MANTLE_DECIMALS,
           isNative: false,
           icon: '💲'
+        },
+        {
+          chain: 'mantle' as const,
+          symbol: 'cmETH',
+          address: CMETH_TOKEN_ADDRESS,
+          decimals: CMETH_DECIMALS,
+          isNative: false,
+          icon: '🔹'
         },
         // zkSync tokens
         {

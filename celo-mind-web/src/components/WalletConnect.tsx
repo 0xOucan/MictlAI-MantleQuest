@@ -1,5 +1,7 @@
 import React from 'react';
+import { usePrivy } from '@privy-io/react-auth';
 import { useWallet } from '../providers/WalletContext';
+import { DEFAULT_NETWORK } from '../config';
 import { LoadingIcon } from './Icons';
 
 // Main header component for wallet connection

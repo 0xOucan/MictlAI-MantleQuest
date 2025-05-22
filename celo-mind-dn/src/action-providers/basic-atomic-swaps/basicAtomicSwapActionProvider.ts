@@ -548,7 +548,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'base' // Explicitly specify Base chain
+        { chain: 'base' } // Explicitly specify Base chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -678,7 +678,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'arbitrum' // Explicitly specify Arbitrum chain
+        { chain: 'arbitrum' } // Explicitly specify Arbitrum chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -869,7 +869,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'mantle' // Explicitly specify Mantle chain
+        { chain: 'mantle' } // Explicitly specify Mantle chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -995,7 +995,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'base' // Explicitly specify Base chain
+        { chain: 'base' } // Explicitly specify Base chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -1121,7 +1121,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'mantle' // Explicitly specify Mantle chain
+        { chain: 'mantle' } // Explicitly specify Mantle chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -1247,7 +1247,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'arbitrum' // Explicitly specify Arbitrum chain
+        { chain: 'arbitrum' } // Explicitly specify Arbitrum chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -1373,7 +1373,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'zksync' as 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync'
+        { chain: 'zksync' } // Explicitly specify zkSync chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -1499,7 +1499,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'base' // Explicitly specify Base chain
+        { chain: 'base' } // Explicitly specify Base chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -1625,7 +1625,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'zksync' as 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync'
+        { chain: 'zksync' } // Explicitly specify zkSync chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -1751,7 +1751,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'arbitrum' // Explicitly specify Arbitrum chain
+        { chain: 'arbitrum' } // Explicitly specify Arbitrum chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -1877,7 +1877,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'mantle' // Explicitly specify Mantle chain
+        { chain: 'mantle' } // Explicitly specify Mantle chain
       );
       
       // Get the transaction hash after the wallet signs it
@@ -2003,7 +2003,7 @@ export class BasicAtomicSwapActionProvider extends ActionProvider<EvmWalletProvi
         "0", // No value since we're calling a contract
         data,
         senderAddress,
-        'zksync' as 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync'
+        { chain: 'zksync' } // Explicitly specify zkSync chain
       );
       
       // Get the transaction hash after the wallet signs it

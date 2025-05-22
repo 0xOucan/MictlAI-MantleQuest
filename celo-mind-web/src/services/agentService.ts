@@ -1,11 +1,15 @@
-import { apiUrl } from '../config';
+import { apiUrl, DEFAULT_NETWORK } from '../config';
 
 /**
  * Send the connected wallet address to the backend
  * @param walletAddress The Ethereum address of the connected wallet
+ * @param network The blockchain network to use (base, arbitrum, mantle, zksync)
  * @returns Success status and any error message
  */
-export const sendWalletAddress = async (walletAddress: string): Promise<{ success: boolean, message: string }> => {
+export const sendWalletAddress = async (
+  walletAddress: string, 
+  network: string = DEFAULT_NETWORK
+): Promise<{ success: boolean, message: string }> => {
   try {
     if (!walletAddress) {
       return { success: false, message: 'No wallet address provided' };
@@ -19,13 +23,21 @@ export const sendWalletAddress = async (walletAddress: string): Promise<{ succes
       };
     }
 
+    // Validate network
+    if (!['base', 'arbitrum', 'mantle', 'zksync'].includes(network)) {
+      return {
+        success: false,
+        message: 'Invalid network. Must be one of: base, arbitrum, mantle, zksync'
+      };
+    }
+
     // Send the wallet address to the backend
     const response = await fetch(`${apiUrl}/api/wallet/connect`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ walletAddress })
+      body: JSON.stringify({ walletAddress, network })
     });
 
     if (!response.ok) {
@@ -57,13 +69,13 @@ export enum AgentResponseType {
 }
 
 /**
- * Parsed agent response
+ * Interface for parsed agent responses
  */
 export interface ParsedAgentResponse {
   type: AgentResponseType;
-  message: string;
+  message?: string;
   data?: any;
-  rawResponse: string;
+  rawResponse?: string;
 }
 
 /**

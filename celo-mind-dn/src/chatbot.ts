@@ -16,6 +16,9 @@ import { TelegramInterface } from "./telegram-interface";
 import "reflect-metadata";
 import { ichiVaultActionProvider } from "./action-providers/ichi-vault";
 import { aaveActionProvider } from "./action-providers/aave";
+import { initCapitalActionProvider } from "./action-providers/init-capital";
+import { merchantMoeActionProvider } from "./action-providers/merchant-moe";
+import { treehouseProtocolActionProvider } from "./action-providers/treehouse-protocol";
 import { createPublicClient, http } from 'viem';
 import { celo, base, arbitrum, mantle, zkSync } from 'viem/chains';
 import { privateKeyToAccount } from "viem/accounts";
@@ -98,23 +101,23 @@ async function selectNetwork(): Promise<string> {
   console.log("4. zkSync Era");
 
   const answer = await new Promise<string>((resolve) => {
-    rl.question("Enter network number (1-4): ", resolve);
+    rl.question("Enter network number (1-4) [default: 3 (Mantle)]: ", resolve);
   });
   
   rl.close();
 
-  if (answer.trim() === "1") {
+  if (answer.trim() === "" || answer.trim() === "3") {
+    return "mantle";
+  } else if (answer.trim() === "1") {
     return "base";
   } else if (answer.trim() === "2") {
     return "arbitrum";
-  } else if (answer.trim() === "3") {
-    return "mantle";
   } else if (answer.trim() === "4") {
     return "zkSync";
   }
   
-  console.log("Invalid choice, defaulting to Base");
-  return "base";
+  console.log("Invalid choice, defaulting to Mantle");
+  return "mantle";
 }
 
 /**
@@ -129,7 +132,7 @@ export async function initializeAgent(options?: { network?: string, nonInteracti
 
     // Select network either interactively or from provided option
     const selectedNetwork = options?.nonInteractive 
-      ? (options.network || "base") 
+      ? (options.network || "mantle") 
       : await selectNetwork();
       
     console.log(`Selected network: ${selectedNetwork}`);
@@ -186,9 +189,13 @@ export async function initializeAgent(options?: { network?: string, nonInteracti
       timeout: 30_000,
     });
 
+    // Always create the client with the Mantle chain when selectedNetwork is mantle
+    const chain = selectedNetwork === "mantle" ? mantle : selectedChain;
+    console.log(`Creating wallet client for ${chain.name} (${chain.id}) network`);
+    
     const client = createWalletClient({
       account,
-      chain: selectedChain,
+      chain,
       transport,
     });
 
@@ -207,26 +214,54 @@ export async function initializeAgent(options?: { network?: string, nonInteracti
         console.warn(`Invalid wallet address format: ${connectedWalletAddress}. Using backend wallet instead.`);
       } else {
         console.log(`Patching wallet provider methods to use connected wallet: ${connectedWalletAddress}`);
+        console.log(`Ensuring all transactions use ${selectedNetwork} network`);
         
         // 1. Patch nativeTransfer
         const origNativeTransfer = walletProvider.nativeTransfer.bind(walletProvider);
         walletProvider.nativeTransfer = async (to: `0x${string}`, value: string): Promise<`0x${string}`> => {
-          console.log(`Intercepting nativeTransfer: to=${to}, value=${value}`);
+          console.log(`Intercepting nativeTransfer on ${selectedNetwork}: to=${to}, value=${value}`);
+          
+          // Force to use Mantle network for Treehouse Protocol related transactions
+          const metadata = selectedNetwork === "mantle" ? 
+            { chain: 'mantle' as 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync' } : 
+            undefined;
+          
           // Use the imported utility function
-          const txId = createPendingTransaction(to, value, undefined, connectedWalletAddress);
+          const txId = createPendingTransaction(to, value, undefined, connectedWalletAddress, metadata);
           return `0x${txId.replace('tx-', '')}` as `0x${string}`;
         };
         
         // 2. Patch sendTransaction
         const origSendTx = walletProvider.sendTransaction.bind(walletProvider);
         walletProvider.sendTransaction = async (tx: any): Promise<`0x${string}`> => {
-          console.log(`Intercepting sendTransaction:`, JSON.stringify(tx, null, 2));
+          console.log(`Intercepting sendTransaction on ${selectedNetwork}:`, JSON.stringify(tx, null, 2));
+          
+          // Prepare metadata object with proper typing
+          let metadata: { chain?: 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync' } & Record<string, any> | undefined;
+          
+          // Check for cmETH token address or Treehouse staking contract in the transaction
+          if (tx.to) {
+            const toAddress = typeof tx.to === 'string' ? tx.to.toLowerCase() : '';
+            if (
+              toAddress === "0xe6829d9a7ee3040e1276fa75293bde931859e8fa" || // cmETH token
+              toAddress === "0x5e4acca7a9989007cd74ae4ed1b096c000779dcc" || // Treehouse staking contract
+              (tx.data && typeof tx.data === 'string' && 
+               tx.data.toLowerCase().includes('0x5e4acca7a9989007cd74ae4ed1b096c000779dcc'))
+            ) {
+              metadata = { chain: 'mantle' };
+              console.log('Detected Treehouse Protocol transaction - forcing Mantle network');
+            } else if (selectedNetwork === "mantle") {
+              metadata = { chain: 'mantle' };
+            }
+          }
+          
           // Use the imported utility function
           const txId = createPendingTransaction(
             tx.to, 
             tx.value ? tx.value.toString() : '0',
             tx.data,
-            connectedWalletAddress
+            connectedWalletAddress,
+            metadata
           );
           return `0x${txId.replace('tx-', '')}` as `0x${string}`;
         };
@@ -258,26 +293,62 @@ export async function initializeAgent(options?: { network?: string, nonInteracti
     console.log("LLM initialized");
 
     // Initialize AgentKit with action providers
-    const agentkit = await AgentKit.from({
-      walletProvider,
-      actionProviders: [
-        // Core providers
-        walletActionProvider(),
-        erc20ActionProvider(),
-        
-        // Include action providers based on selected network
-        ...(selectedNetwork === "celo" ? [
-          // Celo-specific providers
+    const actionProviders = [
+      // Core providers - available on all networks
+      walletActionProvider(),
+      erc20ActionProvider(),
+      
+      // Include action providers based on selected network
+      ...(selectedNetwork === "celo" ? [
+        // Celo-specific providers
         ichiVaultActionProvider(),
         aaveActionProvider(),
         balanceCheckerActionProvider(),
         mentoSwapActionProvider(),
         cUSDescrowforiAmigoP2PActionProvider(),
-        ] : []),
-        
-        // Include the multi-chain basic atomic swap provider for all networks
-        basicAtomicSwapActionProvider(),
-      ],
+      ] : []),
+      
+      // Include Mantle-specific providers
+      ...(selectedNetwork === "mantle" ? [
+        // Mantle-specific providers
+        initCapitalActionProvider(),
+        merchantMoeActionProvider(), // Merchant Moe DEX is Mantle-only
+        treehouseProtocolActionProvider(walletProvider), // Add Treehouse Protocol provider for Mantle with walletProvider
+        // Add other Mantle-specific providers here
+      ] : []),
+      
+      // Include Base-specific providers
+      ...(selectedNetwork === "base" ? [
+        // Base-specific providers
+        // Add Base-specific providers here
+      ] : []),
+      
+      // Include Arbitrum-specific providers
+      ...(selectedNetwork === "arbitrum" ? [
+        // Arbitrum-specific providers
+        // Add Arbitrum-specific providers here
+      ] : []),
+      
+      // Include zkSync-specific providers
+      ...(selectedNetwork === "zkSync" ? [
+        // zkSync-specific providers
+        // Add zkSync-specific providers here
+      ] : []),
+      
+      // Include the multi-chain basic atomic swap provider for all networks
+      // This should be last so network-specific providers take precedence
+      basicAtomicSwapActionProvider(),
+    ];
+    
+    // Log loaded action providers
+    console.log(`Loading action providers for ${selectedNetwork} network:`);
+    actionProviders.forEach(provider => {
+      console.log(`- ${provider.name || 'unnamed provider'}`);
+    });
+
+    const agentkit = await AgentKit.from({
+      walletProvider,
+      actionProviders,
     });
 
     const tools = await getLangChainTools(agentkit);
@@ -330,12 +401,40 @@ export async function initializeAgent(options?: { network?: string, nonInteracti
         - Commands: 'provide XOC liquidity', 'provide 1.5 XOC as liquidity'
         
         ${
+          selectedNetwork === "mantle" ? `
+          🔹 INIT Capital on Mantle:
+          - Create lending positions on INIT Capital protocol
+          - Add collateral (USDT, WETH) to positions
+          - Remove collateral from positions
+          - Borrow against collateral
+          - Repay borrowed tokens
+          - View position details
+          - Commands: 'create position on INIT Capital', 'add collateral to position', 'borrow from INIT Capital'
+          
+          🔹 Treehouse Protocol on Mantle:
+          - Stake cmETH tokens in the Treehouse Protocol
+          - Approve cmETH tokens for staking
+          - Withdraw staked cmETH tokens
+          - View staking data and balances
+          - Commands: 'stake cmETH', 'approve cmETH for staking', 'withdraw staked cmETH', 'view staking data'
+          ` : ''
+        }
+        
+        ${
           selectedNetwork === "celo" ? `
           🔹 Legacy Celo Functionality:
           - AAVE lending and borrowing
           - ICHI vault strategies
           - Mento swaps
           - iAmigo P2P cUSD escrow
+          ` : ''
+        }
+        
+        ${
+          selectedNetwork !== "mantle" && connectedWalletAddress ? `
+          ⚠️ Network-Specific Features:
+          - INIT Capital lending features are only available on the Mantle network
+          - To use INIT Capital, switch to the Mantle network in the dropdown menu
           ` : ''
         }
         

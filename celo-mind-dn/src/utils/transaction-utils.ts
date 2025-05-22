@@ -31,7 +31,7 @@ export const pendingTransactions: PendingTransaction[] = [];
  * @param value Transaction value
  * @param data Optional transaction data
  * @param walletAddress Optional wallet address (for frontend wallet tracking)
- * @param chain Optional chain identifier (celo, base, arbitrum, mantle, zksync)
+ * @param metadata Optional metadata including chain information
  * @returns Transaction ID
  */
 export const createPendingTransaction = (
@@ -39,7 +39,7 @@ export const createPendingTransaction = (
   value: string, 
   data?: string,
   walletAddress?: string,
-  chain?: 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync'
+  metadata?: { chain?: 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync' } & Record<string, any>
 ): string => {
   const txId = `tx-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   
@@ -75,10 +75,29 @@ export const createPendingTransaction = (
   }
 
   // Determine the chain if not provided
-  let determinedChain = chain;
+  let determinedChain = metadata?.chain;
+  
+  // Special handling for Treehouse Protocol and cmETH token transactions
+  const toAddressLower = formattedTo.toLowerCase();
+  
+  // Always use Mantle for cmETH and Treehouse Protocol transactions
+  if (toAddressLower === "0xe6829d9a7ee3040e1276fa75293bde931859e8fa" || // cmETH token
+      toAddressLower === "0x5e4acca7a9989007cd74ae4ed1b096c000779dcc") { // Treehouse staking contract
+    determinedChain = 'mantle';
+    console.log('🌳 Detected cmETH token or Treehouse Protocol transaction - forcing Mantle network');
+  }
+  // Check for cmETH or Treehouse in transaction data
+  else if (formattedData) {
+    // Look for Treehouse staking contract address in the data (for approvals)
+    if (formattedData.toLowerCase().includes('0x5e4acca7a9989007cd74ae4ed1b096c000779dcc')) {
+      determinedChain = 'mantle';
+      console.log('🌳 Detected cmETH approval for Treehouse Protocol - forcing Mantle network');
+    }
+  }
+  
+  // If still no chain determined, use other detection methods
   if (!determinedChain) {
-    // Try to detect chain from token address
-    const toAddressLower = formattedTo.toLowerCase();
+    // Other token detection
     if (toAddressLower === "0xa411c9aa00e020e4f88bc19996d29c5b7adb4acf") { // XOC on Base
       determinedChain = 'base';
       console.log('Auto-detected Base chain transaction');
@@ -88,16 +107,61 @@ export const createPendingTransaction = (
     } else if (toAddressLower === "0x201eba5cc46d216ce6dc03f6a759e8e766e956ae") { // USDT on Mantle
       determinedChain = 'mantle';
       console.log('Auto-detected Mantle chain transaction');
+    } else if (toAddressLower === "0x45a62b090df48243f12a21897e7ed91863e2c86b") { // Merchant Moe Router on Mantle
+      determinedChain = 'mantle';
+      console.log('Auto-detected Merchant Moe Router transaction on Mantle');
     } else if (toAddressLower === "0x493257fd37edb34451f62edf8d2a0c418852ba4c") { // USDT on zkSync Era
       determinedChain = 'zksync';
       console.log('Auto-detected zkSync Era chain transaction');
     } else {
-      // Default to Base for new transactions
-      determinedChain = 'base';
+      // Default to Mantle for new transactions
+      determinedChain = 'mantle';
+      console.log('Using default Mantle network for transaction');
     }
   }
 
-  // Create transaction object
+  // Special handling for Merchant Moe swaps on Mantle
+  let isMerchantMoeSwap = false;
+  if (determinedChain === 'mantle' && 
+      formattedTo.toLowerCase() === '0x45a62b090df48243f12a21897e7ed91863e2c86b' && 
+      formattedData && 
+      formattedData.startsWith('0xf1910f7')) {
+    isMerchantMoeSwap = true;
+    console.log('Detected Merchant Moe swap on Mantle with native MNT value');
+  }
+
+  // Special handling for Treehouse staking contract calls
+  let isTreehouseStaking = false;
+  if (determinedChain === 'mantle' &&
+      formattedTo.toLowerCase() === '0x5e4acca7a9989007cd74ae4ed1b096c000779dcc') {
+    isTreehouseStaking = true;
+    console.log('Detected Treehouse staking contract transaction on Mantle');
+  }
+
+  // Prepare metadata object with correct type
+  const txMetadata: { 
+    source: string; 
+    walletAddress: string; 
+    requiresSignature: boolean; 
+    dataSize: number; 
+    dataType: string; 
+    chain?: 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync';
+  } & Record<string, any> = {
+    source: walletAddress ? 'frontend-wallet' : 'backend-wallet',
+    walletAddress: walletAddress || formattedTo,
+    requiresSignature: !!walletAddress,
+    dataSize: formattedData ? formattedData.length : 0,
+    dataType: isTreehouseStaking ? 'treehouse-staking' :
+              isMerchantMoeSwap ? 'merchant-moe-swap' : 
+              (formattedData ? 
+                (formattedData.startsWith('0x6') ? 'contract-call' : 
+                formattedData.startsWith('0xa9') ? 'token-approval' : 'unknown') 
+              : 'native-transfer'),
+    chain: determinedChain,
+    ...(metadata || {})
+  };
+  
+  // Create transaction object with properly typed metadata
   const pendingTx: PendingTransaction = {
     id: txId,
     to: formattedTo,
@@ -105,24 +169,20 @@ export const createPendingTransaction = (
     data: formattedData,
     status: 'pending',
     timestamp: Date.now(),
-    // Add additional metadata for better tracking
-    metadata: {
-      source: walletAddress ? 'frontend-wallet' : 'backend-wallet',
-      walletAddress: walletAddress || formattedTo,
-      requiresSignature: !!walletAddress,
-      dataSize: formattedData ? formattedData.length : 0,
-      dataType: formattedData ? 
-        (formattedData.startsWith('0x6') ? 'contract-call' : 
-         formattedData.startsWith('0xa9') ? 'token-approval' : 'unknown') 
-        : 'native-transfer',
-      chain: determinedChain
-    }
+    metadata: txMetadata
   };
   
   // Add to global pending transactions
   pendingTransactions.push(pendingTx);
   
   console.log(`✅ Transaction created with ID: ${txId}`);
+  console.log(`🔗 Transaction using ${determinedChain.toUpperCase()} network`);
+  
+  // Additional logging for important transaction details
+  if (isMerchantMoeSwap) {
+    console.log(`Native MNT value for swap: ${formattedValue} wei`);
+  }
+  
   if (walletAddress) {
     console.log(`⏳ Waiting for wallet signature from ${walletAddress}...`);
   }

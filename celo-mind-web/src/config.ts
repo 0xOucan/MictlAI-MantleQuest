@@ -1,6 +1,9 @@
 // API configuration
 export const apiUrl = 'http://localhost:4000'; // Use your actual API endpoint
 
+// Default network configuration
+export const DEFAULT_NETWORK = 'mantle';
+
 // Celo blockchain configuration
 export const CELO_RPC_URL = 'https://forno.celo.org'; // Celo mainnet RPC URL
 export const CELO_EXPLORER_URL = 'https://celoscan.io';
@@ -20,6 +23,11 @@ export const ARBITRUM_CHAIN_ID = 42161;
 export const MANTLE_RPC_URL = 'https://rpc.mantle.xyz';
 export const MANTLE_EXPLORER_URL = 'https://explorer.mantle.xyz';
 export const MANTLE_CHAIN_ID = 5000;
+
+// Mantle token addresses
+export const USDT_MANTLE_TOKEN_ADDRESS = "0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE"; // USDT on Mantle
+export const CMETH_TOKEN_ADDRESS = "0xE6829d9a7eE3040e1276Fa75293Bde931859e8fA"; // cmETH on Mantle
+export const TREEHOUSE_STAKING_ADDRESS = "0x5E4ACCa7a9989007cD74aE4ed1b096c000779DCC"; // Treehouse staking contract
 
 // zkSync Era blockchain configuration
 export const ZKSYNC_RPC_URL = 'https://mainnet.era.zksync.io';
@@ -65,6 +73,7 @@ export const tokenIcons = {
   USDC: '💵',
   'cUSD': '💲',
   'cEUR': '💶',
+  'cmETH': '🔹',
 }; 
 
 // 📋 Tracked tokens for balance checking

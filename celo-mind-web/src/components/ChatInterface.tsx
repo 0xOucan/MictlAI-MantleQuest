@@ -17,11 +17,12 @@ interface EnhancedAgentResponse extends ImportedAgentResponse {
 interface Message {
   id: string;
   content: string;
-  sender: 'user' | 'agent';
+  sender: 'user' | 'agent' | 'system';
   timestamp: number;
   type?: AgentResponseType;
   requiresAction?: boolean;
   data?: any;
+  networkSuggestion?: string;
 }
 
 // Update the interface to match the updated API
@@ -312,15 +313,105 @@ const Message = ({ message }: { message: Message }) => {
   );
 };
 
-// ChatInterface component
+// Add this helper function to detect network-specific requests
+const detectNetworkSpecificRequest = (message: string): string | null => {
+  const lowerMsg = message.toLowerCase();
+  
+  // Detect INIT Capital related requests (Mantle-specific)
+  if (
+    lowerMsg.includes('init capital') ||
+    lowerMsg.includes('open a position') ||
+    lowerMsg.includes('create a position') ||
+    lowerMsg.includes('position on mantle') ||
+    lowerMsg.includes('add collateral') ||
+    lowerMsg.includes('borrow from init') ||
+    lowerMsg.includes('lending on mantle')
+  ) {
+    return 'mantle';
+  }
+  
+  // Detect Merchant Moe related requests (Mantle-specific)
+  if (
+    lowerMsg.includes('merchant moe') ||
+    lowerMsg.includes('swap mnt') ||
+    lowerMsg.includes('swap usdt on mantle') ||
+    lowerMsg.includes('swap on mantle') ||
+    lowerMsg.includes('approve token for merchant') ||
+    lowerMsg.includes('mantle token swap')
+  ) {
+    return 'mantle';
+  }
+  
+  // Detect Treehouse Protocol related requests (Mantle-specific)
+  if (
+    lowerMsg.includes('treehouse protocol') ||
+    lowerMsg.includes('treehouse') ||
+    lowerMsg.includes('stake cmeth') ||
+    lowerMsg.includes('cmeth staking') ||
+    lowerMsg.includes('cmeth') ||
+    lowerMsg.includes('on mantle') ||
+    lowerMsg.includes('mantle network')
+  ) {
+    return 'mantle';
+  }
+  
+  return null;
+};
+
+// First, look for the NetworkSwitchSuggestion component and enhance it
+const NetworkSwitchSuggestion: React.FC<{
+  detectedNetwork: string;
+  currentNetwork: string;
+  onSwitchNetwork: (network: string) => void;
+}> = ({ detectedNetwork, currentNetwork, onSwitchNetwork }) => {
+  // If UI already shows we're on the right network, show a different message
+  if (detectedNetwork === currentNetwork) {
+    return (
+      <div className="bg-mictlai-obsidian/60 border-2 border-mictlai-blood p-3 mb-4 shadow-pixel">
+        <div className="flex flex-col items-center text-center">
+          <div className="text-mictlai-blood font-pixel mb-2">NETWORK SYNCHRONIZATION ISSUE</div>
+          <div className="text-mictlai-bone text-xs mb-3 font-pixel">
+            Your UI shows you're on the {currentNetwork} network, but the backend may not be synchronized properly.
+          </div>
+          <button
+            onClick={() => onSwitchNetwork(detectedNetwork)}
+            className="px-3 py-1.5 border-2 border-mictlai-blood text-mictlai-blood hover:bg-mictlai-blood/20 font-pixel text-xs shadow-pixel"
+          >
+            RESYNCHRONIZE NETWORK
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="bg-mictlai-obsidian/60 border-2 border-mictlai-gold p-3 mb-4 shadow-pixel">
+      <div className="flex flex-col items-center text-center">
+        <div className="text-mictlai-gold font-pixel mb-2">NETWORK REQUIRED: {detectedNetwork.toUpperCase()}</div>
+        <div className="text-mictlai-bone text-xs mb-3 font-pixel">
+          This action requires the {detectedNetwork} network, but you're currently on {currentNetwork}.
+        </div>
+        <button
+          onClick={() => onSwitchNetwork(detectedNetwork)}
+          className="pixel-btn py-1 px-4 font-pixel text-sm"
+        >
+          SWITCH TO {detectedNetwork.toUpperCase()}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Then, modify the main ChatInterface component to add network switching functionality
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isWaiting, setIsWaiting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { connectedAddress, isConnected } = useWallet();
+  const { connectedAddress, isConnected, currentNetwork, switchNetwork } = useWallet();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const lastAgentMessageIdRef = useRef<string | null>(null);
+  const [apiUrl] = useState(() => import.meta.env.VITE_API_URL || 'http://localhost:4000');
   
   // Scroll to bottom of chat when new messages are added
   const scrollToBottom = () => {
@@ -387,6 +478,25 @@ export default function ChatInterface() {
     };
     
     setMessages(prev => [...prev, typingIndicator]);
+    
+    // Check if this is a network-specific request
+    const requiredNetwork = detectNetworkSpecificRequest(inputValue);
+    
+    if (requiredNetwork && requiredNetwork !== currentNetwork) {
+      // Don't send to backend yet, just show the network switch suggestion
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `system-${Date.now()}`,
+          content: `This action requires the ${requiredNetwork} network. Please switch networks using the dropdown in the header.`,
+          sender: 'system',
+          timestamp: Date.now(),
+          networkSuggestion: requiredNetwork
+        },
+      ]);
+      setIsWaiting(false);
+      return;
+    }
     
     try {
       // Send message to backend
@@ -505,6 +615,191 @@ export default function ChatInterface() {
     }
   };
 
+  // Replace the handleNetworkSwitch function with an improved version that ensures backend synchronization
+  const handleNetworkSwitch = async (network: string) => {
+    try {
+      setIsWaiting(true);
+      
+      // Add a system message indicating the network switch attempt
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `system-${Date.now()}`,
+          content: `Switching to ${network} network...`,
+          sender: 'system',
+          timestamp: Date.now()
+        }
+      ]);
+      
+      // Use the switchNetwork function from WalletContext
+      const success = await switchNetwork(network);
+      
+      if (!success) {
+        throw new Error(`Failed to switch to ${network}`);
+      }
+      
+      // Add a verification step - verify with the backend that the network has been switched
+      try {
+        // Check the current network on the backend by calling the health endpoint
+        const healthResponse = await fetch(`${apiUrl}/api/health`);
+        const healthData = await healthResponse.json();
+        
+        if (healthData.network !== network) {
+          // Additional request to ensure network switch
+          await fetch(`${apiUrl}/api/network/select`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ network })
+          });
+          
+          // Wait a moment for the backend to process the network change
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Re-connect the wallet to ensure proper synchronization
+          if (connectedAddress) {
+            await fetch(`${apiUrl}/api/wallet/connect`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ walletAddress: connectedAddress, network })
+            });
+            
+            // Wait another moment for wallet reconnection
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+        }
+      } catch (verificationError) {
+        console.error('Error verifying network switch:', verificationError);
+        // Continue anyway as the UI shows the correct network
+      }
+      
+      // Add a success message
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `system-${Date.now()}`,
+          content: `Successfully switched to ${network} network. You can now use ${network}-specific features.`,
+          sender: 'system',
+          timestamp: Date.now()
+        }
+      ]);
+      
+      // Ask the AI again with the last user message to get the proper response
+      const lastUserMessage = [...messages].reverse().find(m => m.sender === 'user');
+      if (lastUserMessage) {
+        // Create a new artificial message using the same content
+        const newUserMessage = {
+          id: `user-${Date.now()}`,
+          content: lastUserMessage.content,
+          sender: 'user' as const,
+          timestamp: Date.now(),
+        };
+        
+        // Add the new user message to the chat
+        setMessages(prev => [...prev, newUserMessage]);
+        
+        // Then trigger the sendMessage logic manually
+        try {
+          setIsWaiting(true);
+          
+          // Immediate typing indicator
+          const typingIndicatorId = `agent-typing-${Date.now()}`;
+          const typingIndicator = {
+            id: typingIndicatorId,
+            content: "Thinking...",
+            sender: 'agent' as const,
+            timestamp: Date.now(),
+          };
+          
+          setMessages(prev => [...prev, typingIndicator]);
+          
+          // Send message to backend with a slight delay to ensure network switch is complete
+          await new Promise(resolve => setTimeout(resolve, 500));
+          const response = await sendChatMessage(lastUserMessage.content);
+          
+          // Remove typing indicator
+          setMessages(prev => prev.filter(m => m.id !== typingIndicatorId));
+          
+          // Add agent response
+          if (response) {
+            const agentMessage = {
+              id: `agent-${Date.now()}`,
+              content: response.message || "I'm sorry, I couldn't process that request.",
+              sender: 'agent' as const,
+              timestamp: Date.now(),
+              type: response.type,
+              data: response.data,
+            };
+            
+            setMessages(prev => [...prev, agentMessage]);
+          }
+        } catch (error) {
+          console.error('Error resending message:', error);
+        } finally {
+          setIsWaiting(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error switching network:', error);
+      
+      // Add an error message
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `system-${Date.now()}`,
+          content: `Failed to switch to ${network} network. Please try again or use the dropdown in the header.`,
+          sender: 'system',
+          timestamp: Date.now()
+        }
+      ]);
+    } finally {
+      setIsWaiting(false);
+    }
+  };
+
+  // Update the processMessageContent function to use currentNetwork from WalletContext
+  const processMessageContent = (message: Message) => {
+    // Check if the message suggests a network switch
+    if (message.sender === 'agent' && 
+        (message.content.includes('requires the mantle network') || 
+         message.content.includes('switch networks') ||
+         message.content.match(/requires the \w+ network/i))) {
+      
+      // Detect which network is required
+      let detectedNetwork: string | null = null;
+      
+      if (message.content.includes('mantle network')) {
+        detectedNetwork = 'mantle';
+      } else if (message.content.includes('base network')) {
+        detectedNetwork = 'base';
+      } else if (message.content.includes('arbitrum network')) {
+        detectedNetwork = 'arbitrum';
+      } else if (message.content.includes('zksync network')) {
+        detectedNetwork = 'zksync';
+      }
+      
+      // If a network is detected, render the network switcher
+      if (detectedNetwork && detectedNetwork !== currentNetwork) {
+        return (
+          <>
+            <div>{message.content}</div>
+            <NetworkSwitchSuggestion 
+              detectedNetwork={detectedNetwork}
+              currentNetwork={currentNetwork}
+              onSwitchNetwork={handleNetworkSwitch}
+            />
+          </>
+        );
+      }
+    }
+    
+    // Regular message rendering
+    return message.content;
+  };
+  
   return (
     <div className="bg-mictlai-obsidian border-3 border-mictlai-gold shadow-pixel-lg h-[600px] max-h-[calc(100vh-250px)] flex flex-col pixel-panel">
       <div className="p-4 bg-black border-b-3 border-mictlai-gold/70 flex justify-between items-center">
@@ -527,7 +822,36 @@ export default function ChatInterface() {
         ref={chatContainerRef}
       >
         {messages.map((message) => (
-          <Message key={message.id} message={message} />
+          <div
+            key={message.id}
+            className={`mb-4 ${
+              message.sender === 'user' ? 'text-right' : ''
+            }`}
+          >
+            {/* If this message has a network suggestion, render the network switch component */}
+            {message.sender === 'system' && message.networkSuggestion && (
+              <NetworkSwitchSuggestion
+                detectedNetwork={message.networkSuggestion}
+                currentNetwork={currentNetwork}
+                onSwitchNetwork={handleNetworkSwitch}
+              />
+            )}
+            
+            <div
+              className={`inline-block rounded-lg py-2 px-3 max-w-[80%] ${
+                message.sender === 'user'
+                  ? 'bg-blue-600 text-white'
+                  : message.sender === 'system'
+                  ? 'bg-yellow-800/50 text-yellow-100 border border-yellow-600/30'
+                  : 'bg-gray-700 text-white'
+              }`}
+            >
+              {processMessageContent(message)}
+            </div>
+            <div className="text-xs text-gray-500 mt-1">
+              {new Date(message.timestamp).toLocaleTimeString()}
+            </div>
+          </div>
         ))}
         <div ref={messagesEndRef} />
       </div>

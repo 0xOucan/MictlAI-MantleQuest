@@ -5,8 +5,24 @@ import LiquidityMonitor from './components/LiquidityMonitor';
 import InfoPanel from './components/InfoPanel';
 import WalletConnect, { WalletStatusBar } from './components/WalletConnect';
 import { PrivyProvider } from './providers/PrivyProvider';
-import { WalletProvider } from './providers/WalletContext';
+import { WalletProvider, useWallet } from './providers/WalletContext';
 import TransactionMonitor from './components/TransactionMonitor';
+import { DEFAULT_NETWORK } from './config';
+
+// Component to ensure network synchronization on app start
+const NetworkInitializer: React.FC = () => {
+  const { isConnected, switchNetwork, currentNetwork } = useWallet();
+  
+  useEffect(() => {
+    // If wallet is connected, make sure we're on the default network
+    if (isConnected && currentNetwork !== DEFAULT_NETWORK) {
+      console.log(`Initializing to default network: ${DEFAULT_NETWORK}`);
+      switchNetwork(DEFAULT_NETWORK);
+    }
+  }, [isConnected, currentNetwork, switchNetwork]);
+  
+  return null;
+};
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
@@ -42,6 +58,7 @@ export default function App() {
   return (
     <PrivyProvider>
       <WalletProvider>
+        <NetworkInitializer />
         <div className="min-h-screen bg-mictlai-obsidian text-mictlai-bone font-pixel">
           {/* Main header - Pixel Art Style */}
           <header className="bg-black border-b-3 border-mictlai-gold px-4 py-3 shadow-pixel-lg">

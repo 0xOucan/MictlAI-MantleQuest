@@ -14,7 +14,7 @@ dotenv.config();
 
 // Store connected wallet address globally for use across requests
 let connectedWalletAddress: string | null = null;
-let selectedNetwork: string = "base"; // Default to Base network
+let selectedNetwork: string = "mantle"; // Default to Mantle network
 
 // Cache agent instances by wallet address and network
 const agentCache: Record<string, { agent: any, config: any, timestamp: number }> = {};
@@ -43,20 +43,37 @@ async function getOrCreateAgent(walletAddress: string | null, network: string = 
   
   // Initialize a new agent
   console.log(`Creating new agent for ${cacheKey}`);
-  const { agent, config } = await initializeAgent({ 
-    network: network, 
-    nonInteractive: true,
-    walletAddress: walletAddress
-  });
   
-  // Cache the new agent
-  agentCache[cacheKey] = {
-    agent,
-    config,
-    timestamp: now
-  };
-  
-  return { agent, config };
+  try {
+    const { agent, config } = await initializeAgent({ 
+      network: network, 
+      nonInteractive: true,
+      walletAddress: walletAddress
+    });
+    
+    // Cache the new agent
+    agentCache[cacheKey] = {
+      agent,
+      config,
+      timestamp: now
+    };
+    
+    return { agent, config };
+  } catch (error) {
+    console.error(`Failed to initialize agent for ${cacheKey}:`, error);
+    
+    // If we have an expired agent in cache, use it as fallback
+    if (agentCache[cacheKey]) {
+      console.log(`Using expired agent for ${cacheKey} as fallback`);
+      return {
+        agent: agentCache[cacheKey].agent,
+        config: agentCache[cacheKey].config
+      };
+    }
+    
+    // Otherwise re-throw the error
+    throw error;
+  }
 }
 
 /**
@@ -84,14 +101,69 @@ function updateAssociatedSwapRecords(txId, status, hash) {
 }
 
 /**
+ * Check if the user explicitly mentioned a protocol that should be prioritized
+ * @param userInput - The user's query text
+ * @returns The appropriate network to use, or null if no specific protocol mentioned
+ */
+function detectProtocolNetwork(userInput: string): string | null {
+  const lowerInput = userInput.toLowerCase();
+  
+  // Check for Mantle-specific protocols
+  if (
+    lowerInput.includes('merchant moe') || 
+    lowerInput.includes('merchantmoe') ||
+    lowerInput.includes('init capital') || 
+    lowerInput.includes('initcapital') ||
+    lowerInput.includes('treehouse protocol') ||
+    lowerInput.includes('treehouse') ||
+    lowerInput.includes('stake cmeth') ||
+    lowerInput.includes('cmeth staking') ||
+    (lowerInput.includes('swap') && lowerInput.includes('mnt') && lowerInput.includes('mantle')) ||
+    (lowerInput.includes('swap') && lowerInput.includes('usdt') && lowerInput.includes('mantle'))
+  ) {
+    console.log("Detected Mantle-specific protocol mention in user query");
+    return "mantle";
+  }
+  
+  // Check for Base-specific protocols
+  if (
+    lowerInput.includes('base bridge') ||
+    lowerInput.includes('basebridge')
+  ) {
+    console.log("Detected Base-specific protocol mention in user query");
+    return "base";
+  }
+  
+  // Check for Arbitrum-specific protocols
+  if (
+    lowerInput.includes('arbitrum bridge') ||
+    lowerInput.includes('arbitrumbridge')
+  ) {
+    console.log("Detected Arbitrum-specific protocol mention in user query");
+    return "arbitrum";
+  }
+  
+  // Check for zkSync-specific protocols
+  if (
+    lowerInput.includes('zksync bridge') ||
+    lowerInput.includes('zksyncbridge')
+  ) {
+    console.log("Detected zkSync-specific protocol mention in user query");
+    return "zksync";
+  }
+  
+  return null;
+}
+
+/**
  * Create an Express server to expose the AI agent as an API
  */
 async function createServer() {
   try {
-    // Initialize the agent in non-interactive mode, automatically selecting Base
+    // Initialize the agent in non-interactive mode, automatically selecting Mantle
     console.log("🤖 Initializing AI agent for API...");
     const { agent: defaultAgent, config: defaultConfig } = await initializeAgent({ 
-      network: "base", 
+      network: "mantle", 
       nonInteractive: true 
     });
     console.log("✅ Agent initialization complete");
@@ -100,7 +172,7 @@ async function createServer() {
     const stopRelayService = startAtomicSwapRelay();
     
     // Initialize the default agent cache
-    agentCache["default-base"] = {
+    agentCache["default-mantle"] = {
       agent: defaultAgent,
       config: defaultConfig,
       timestamp: Date.now()
@@ -114,7 +186,7 @@ async function createServer() {
     // Wallet connection endpoint
     app.post("/api/wallet/connect", async (req, res) => {
       try {
-        const { walletAddress, network = "base" } = req.body;
+        const { walletAddress, network = selectedNetwork } = req.body;
         
         if (!walletAddress) {
           return res.status(400).json({ 
@@ -141,16 +213,45 @@ async function createServer() {
         
         console.log(`✅ Wallet connected: ${walletAddress} on ${network}`);
         
-        // Store the wallet address and network for future agent initializations
+        // Store the wallet address for future agent initializations
         connectedWalletAddress = walletAddress;
-        selectedNetwork = network;
+        
+        // If a different network is requested, switch to it
+        if (network !== selectedNetwork) {
+          console.log(`Switching network from ${selectedNetwork} to ${network} for wallet connection`);
+          selectedNetwork = network;
+        }
+        
+        // Log the network being used (should be Mantle)
+        console.log(`⚠️ Current selected network: ${selectedNetwork.toUpperCase()}`);
+        
+        // Ensure we're using Mantle for Treehouse Protocol transactions
+        if (selectedNetwork !== 'mantle' && walletAddress) {
+          console.log(`⚠️ Warning: Using ${selectedNetwork} network, but Treehouse Protocol requires Mantle network`);
+        }
         
         // Pre-initialize an agent for this wallet address and network
-        await getOrCreateAgent(walletAddress, network);
+        // Force a new agent creation by invalidating the cache
+        const cacheKey = `${walletAddress}-${network}`;
+        if (agentCache[cacheKey]) {
+          delete agentCache[cacheKey];
+        }
+        
+        try {
+          await getOrCreateAgent(walletAddress, network);
+          console.log(`✅ Successfully initialized agent for ${walletAddress} on ${network}`);
+        } catch (agentError) {
+          console.error(`Failed to initialize agent for ${walletAddress} on ${network}:`, agentError);
+          return res.status(500).json({
+            success: false,
+            message: 'Failed to initialize agent for wallet. Please try again.'
+          });
+        }
         
         return res.status(200).json({ 
           success: true, 
-          message: `Wallet address received and stored for agent communication on ${network}` 
+          message: `Wallet address received and stored for agent communication on ${network}`,
+          network: network
         });
       } catch (error) {
         console.error('Error handling wallet connection:', error);
@@ -181,17 +282,46 @@ async function createServer() {
           });
         }
         
-        console.log(`✅ Network changed to: ${network}`);
+        console.log(`✅ Network changing from ${selectedNetwork} to: ${network}`);
+        
+        // If we're already on this network, just return success
+        if (selectedNetwork === network) {
+          return res.status(200).json({
+            success: true,
+            message: `Already on ${network} network`,
+            previousNetwork: selectedNetwork,
+            newNetwork: network
+          });
+        }
+        
+        // Store the previous network for reference
+        const previousNetwork = selectedNetwork;
+        // Update the network
         selectedNetwork = network;
         
         // Pre-initialize an agent for the current wallet on the new network
+        // Force a new agent creation by invalidating the cache
         if (connectedWalletAddress) {
-          await getOrCreateAgent(connectedWalletAddress, network);
+          const cacheKey = `${connectedWalletAddress}-${network}`;
+          // Delete the cached agent if it exists
+          if (agentCache[cacheKey]) {
+            delete agentCache[cacheKey];
+          }
+          
+          try {
+            await getOrCreateAgent(connectedWalletAddress, network);
+            console.log(`✅ Successfully initialized agent for ${connectedWalletAddress} on ${network}`);
+          } catch (agentError) {
+            console.error(`Failed to initialize agent for ${network}:`, agentError);
+            // Even if agent initialization fails, we keep the network change
+          }
         }
         
         return res.status(200).json({
           success: true,
-          message: `Network changed to ${network}`
+          message: `Network changed to ${network}`,
+          previousNetwork,
+          newNetwork: network
         });
       } catch (error) {
         console.error('Error changing network:', error);
@@ -270,6 +400,30 @@ async function createServer() {
 
         console.log(`🔍 Received query: "${userInput}"`);
         
+        // Check if the user explicitly mentioned a protocol
+        const protocolNetwork = detectProtocolNetwork(userInput);
+        
+        // Special handling for Treehouse Protocol queries
+        if (userInput.toLowerCase().includes('cmeth') || 
+            userInput.toLowerCase().includes('treehouse') || 
+            userInput.toLowerCase().includes('staking on mantle')) {
+          console.log(`⚠️ Detected Treehouse Protocol query, ensuring Mantle network is used`);
+          
+          if (selectedNetwork !== 'mantle') {
+            console.log(`⚠️ Switching to Mantle network for Treehouse Protocol query`);
+            selectedNetwork = 'mantle';
+          }
+        }
+        
+        // If user mentioned a specific protocol, prioritize that network
+        if (protocolNetwork && protocolNetwork !== selectedNetwork) {
+          console.log(`Detected protocol-specific request for ${protocolNetwork} network, but current network is ${selectedNetwork}`);
+          console.log(`Advising user to switch to ${protocolNetwork} network for this request`);
+          return res.json({ 
+            response: `This action requires the ${protocolNetwork} network. Please switch networks using the dropdown in the header.` 
+          });
+        }
+        
         // Get agent for the current wallet address and network
         let { agent, config } = await getOrCreateAgent(connectedWalletAddress, selectedNetwork);
         
@@ -314,6 +468,14 @@ async function createServer() {
       console.log(`🔗 Wallet connection: http://localhost:${PORT}/api/wallet/connect`);
       console.log(`🔗 Network selection: http://localhost:${PORT}/api/network/select`);
       console.log(`🔗 Pending transactions: http://localhost:${PORT}/api/transactions/pending`);
+      console.log(`🌐 Current network: ${selectedNetwork.toUpperCase()}`);
+      
+      // Verify we're on Mantle network
+      if (selectedNetwork !== 'mantle') {
+        console.warn(`⚠️ WARNING: Running on ${selectedNetwork} network, but Mantle is the default. Use /api/network/select to switch.`);
+      } else {
+        console.log(`✅ Correctly running on Mantle network`);
+      }
     });
   } catch (error) {
     console.error("🚨 Failed to start API server:", error);

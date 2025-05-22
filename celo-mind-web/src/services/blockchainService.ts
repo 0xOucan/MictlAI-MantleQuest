@@ -65,6 +65,29 @@ const arbitrumClient = createPublicClient({
 
 // Mantle chain is not part of viem's built-in chains
 // We'd need to define it manually if needed
+const mantleChain = {
+  id: 5000,
+  name: 'Mantle',
+  network: 'mantle',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Mantle',
+    symbol: 'MNT',
+  },
+  rpcUrls: {
+    public: { http: [MANTLE_RPC_URL] },
+    default: { http: [MANTLE_RPC_URL] },
+  },
+  blockExplorers: {
+    default: { name: 'Mantle Explorer', url: 'https://explorer.mantle.xyz' },
+  },
+};
+
+// Create public client for Mantle
+const mantleClient = createPublicClient({
+  chain: mantleChain,
+  transport: http(MANTLE_RPC_URL),
+});
 
 // Create public client for zkSync Era
 const zkSyncClient = createPublicClient({
@@ -77,7 +100,7 @@ export const chainClients = {
   celo: celoClient,
   base: baseClient,
   arbitrum: arbitrumClient,
-  // mantle: mantleClient, // Would need to be defined with manual chain config
+  mantle: mantleClient, // Now defined with manual chain config
   zksync: zkSyncClient
 };
 
@@ -166,7 +189,7 @@ export const getWalletAddress = async (): Promise<string> => {
  */
 export const getNativeBalance = async (
   address: string = DEFAULT_WALLET_ADDRESS,
-  chain: 'celo' | 'base' | 'arbitrum' | 'zksync' = 'celo'
+  chain: 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync' = 'celo'
 ): Promise<bigint> => {
   try {
     let client;
@@ -176,6 +199,9 @@ export const getNativeBalance = async (
         break;
       case 'arbitrum':
         client = arbitrumClient;
+        break;
+      case 'mantle':
+        client = mantleClient;
         break;
       case 'zksync':
         client = zkSyncClient;
@@ -201,7 +227,7 @@ export const getNativeBalance = async (
 export const getTokenBalance = async (
   tokenAddress: string,
   walletAddress: string = DEFAULT_WALLET_ADDRESS,
-  chain: 'celo' | 'base' | 'arbitrum' | 'zksync' = 'celo'
+  chain: 'celo' | 'base' | 'arbitrum' | 'mantle' | 'zksync' = 'celo'
 ): Promise<bigint> => {
   try {
     let client;
@@ -211,6 +237,9 @@ export const getTokenBalance = async (
         break;
       case 'arbitrum':
         client = arbitrumClient;
+        break;
+      case 'mantle':
+        client = mantleClient;
         break;
       case 'zksync':
         client = zkSyncClient;

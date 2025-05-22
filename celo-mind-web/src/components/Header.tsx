@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import { useWallet } from '../providers/WalletContext';
 
@@ -13,6 +13,14 @@ const skullIcon = (
   </svg>
 );
 
+// Network information with names and icons
+const networks = [
+  { id: 'base', name: 'Base', icon: '🟢' },
+  { id: 'arbitrum', name: 'Arbitrum', icon: '🔵' },
+  { id: 'mantle', name: 'Mantle', icon: '🟣' },
+  { id: 'zksync', name: 'zkSync Era', icon: '⚡' },
+];
+
 interface HeaderProps {
   toggleDarkMode: () => void;
   isDarkMode: boolean;
@@ -20,12 +28,37 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ toggleDarkMode, isDarkMode }) => {
   const { login, authenticated, logout } = usePrivy();
-  const { connectedAddress } = useWallet();
+  const { connectedAddress, currentNetwork, switchNetwork } = useWallet();
+  const [isNetworkMenuOpen, setIsNetworkMenuOpen] = useState(false);
+  const [isSwitching, setIsSwitching] = useState(false);
   
   // Helper function to format address
   const formatAddress = (): string => {
     if (!connectedAddress) return '';
     return `${connectedAddress.slice(0, 6)}...${connectedAddress.slice(-4)}`;
+  };
+
+  // Get current network info
+  const getCurrentNetworkInfo = () => {
+    return networks.find(n => n.id === currentNetwork) || networks[0];
+  };
+
+  // Handle network switch
+  const handleNetworkSwitch = async (networkId: string) => {
+    if (networkId === currentNetwork || !authenticated) return;
+    
+    setIsSwitching(true);
+    try {
+      const success = await switchNetwork(networkId);
+      if (!success) {
+        console.error(`Failed to switch to ${networkId}`);
+      }
+    } catch (error) {
+      console.error('Error switching network:', error);
+    } finally {
+      setIsSwitching(false);
+      setIsNetworkMenuOpen(false);
+    }
   };
 
   return (
@@ -36,6 +69,55 @@ const Header: React.FC<HeaderProps> = ({ toggleDarkMode, isDarkMode }) => {
         </div>
 
       <div className="flex items-center space-x-3">
+        {authenticated && (
+          <div className="relative">
+            <button
+              onClick={() => setIsNetworkMenuOpen(!isNetworkMenuOpen)}
+              disabled={isSwitching}
+              className={`flex items-center space-x-2 py-1.5 px-3 ${
+                isSwitching ? 'opacity-70 cursor-not-allowed' : 'hover:bg-black/80'
+              } bg-black/40 text-mictlai-bone border border-mictlai-gold/30 rounded-md transition-colors`}
+            >
+              <span className="text-sm font-medium flex items-center">
+                {getCurrentNetworkInfo().icon} {getCurrentNetworkInfo().name}
+              </span>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                strokeWidth={1.5} 
+                stroke="currentColor" 
+                className={`w-4 h-4 transition-transform ${isNetworkMenuOpen ? 'rotate-180' : ''}`}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
+            </button>
+
+            {isNetworkMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-black border border-mictlai-gold/30 rounded-md shadow-lg z-20">
+                <ul className="py-1">
+                  {networks.map((network) => (
+                    <li key={network.id}>
+                      <button
+                        onClick={() => handleNetworkSwitch(network.id)}
+                        className={`w-full text-left px-4 py-2 text-sm ${
+                          network.id === currentNetwork 
+                            ? 'bg-mictlai-blood text-white' 
+                            : 'text-mictlai-bone hover:bg-mictlai-obsidian'
+                        }`}
+                      >
+                        <span className="flex items-center">
+                          {network.icon} <span className="ml-2">{network.name}</span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+            
             <button 
           onClick={toggleDarkMode}
           className="p-2 rounded-full text-mictlai-bone/70 hover:text-mictlai-bone"
