@@ -256,7 +256,7 @@ You can monitor the status in the Transactions panel.`;
       return await walletProvider.readContract({
         address: ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`,
         abi: TREEHOUSE_STAKING_ABI,
-        functionName: "getStakedAmount",
+        functionName: "stakedBalances",
         args: [userAddress as `0x${string}`, tokenAddress as `0x${string}`],
       }) as bigint;
     } catch (error) {
@@ -714,6 +714,7 @@ You can monitor the status in the Transactions panel.`;
               inputs: [
                 { name: "token", type: "address" },
                 { name: "amount", type: "uint256" },
+                { name: "receiver", type: "address" },
               ],
               name: "deposit",
               outputs: [],
@@ -722,7 +723,11 @@ You can monitor the status in the Transactions panel.`;
             },
           ],
           functionName: "deposit",
-          args: [ChainConstants.CMETH_TOKEN_ADDRESS as `0x${string}`, amountInWei],
+          args: [
+            ChainConstants.CMETH_TOKEN_ADDRESS as `0x${string}`, 
+            amountInWei, 
+            walletAddress as `0x${string}`
+          ],
         }),
       };
 
@@ -745,4 +750,4 @@ You can monitor the status in the Transactions panel.`;
   }
 }
 
-export const treehouseProtocolActionProvider = (walletProvider: WalletProvider) => new TreehouseProtocolActionProvider(walletProvider); 
+export const treehouseProtocolActionProvider = (walletProvider: WalletProvider) => new TreehouseProtocolActionProvider(walletProvider);
