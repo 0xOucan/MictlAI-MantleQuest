@@ -1,8 +1,8 @@
 # 💀 MictlAI 💀: AI-Powered Cross-Chain Bridge
 
-[![MictlAI Demo Video](https://img.youtube.com/vi/-fRQruMqX_Y/0.jpg)](https://www.youtube.com/watch?v=-fRQruMqX_Y)
+[![MictlAI Demo Video](https://img.youtube.com/vi/-64syJ4naoI/0.jpg)](https://www.youtube.com/watch?v=-64syJ4naoI)
 
-> 🏆 **Cookathon Project** - [View Submission](https://taikai.network/ethcdm/hackathons/ethcdm-2/projects/cma9asf3z0fw2u9xxkax97kvm/idea)  
+> 🏆 **Cookathon Project** - [View Cookathon](https://www.cookathon.dev/)  
 > 🛠️ **Tracks**: Mantle, $MXNB, ZKsync  
 > 📂 **Repository**: [GitHub](https://github.com/0xOucan/MictlAI)
 > 🔥 **Mantle Quest Edition**: [MictlAI: The Mantle Quest](https://github.com/0xOucan/MictlAI-MantleQuest)
@@ -31,13 +31,21 @@
 
 ## 🏺 The MictlAI Legend
 
-In ancient Aztec mythology, **Mictlantecuhtli ruled Mictlán**, the underworld—a realm where souls journeyed after death, navigating nine challenging levels to reach their final destination.
+In ancient Aztec mythology, **Mictlantecuhtli ruled Mictlán**, the underworld—a realm where souls journeyed after death, navigating nine challenging levels to reach their final destination. Each level presented unique trials, guardians, and pathways that tested the soul's worthiness and determination.
 
-Today, **💀MictlAI💀** emerges as a digital guardian of the blockchain underworld, facilitating seamless passage between disparate realms. Just as Mictlantecuhtli guided souls through Mictlan's levels, **MictlAI guides your assets across the complex landscape of multiple blockchains.**
+Among these mystical layers lies **the Mantle realm**—a sophisticated network of interconnected protocols and bridges where digital assets undergo their own transformation. Just as ancient souls needed to prove their worth through various trials, modern tokens must navigate through **NEBULA AI's wisdom**, **Treehouse Protocol's staking chambers**, **Lendle Protocol's lending halls**, and **Merchant Moe's trading crossroads**.
 
-The journey of your tokens—from **Base to Arbitrum, Mantle to zkSync Era**—mirrors the soul's journey through Mictlan's territories. With MictlAI as your guide, these journeys become seamless, secure, and swift.
+**🏺 The Mantle Quest 🏺**
 
-Where **traditional bridges have failed through hacks and exploits**, **💀MictlAI💀**'s atomic swap mechanism creates a **direct, trustless pathway between blockchain worlds**—a pathway guarded by the wisdom of AI and the security of decentralized protocols.
+In this sacred layer of the digital Mictlán, **MictlAI: The Mantle Quest** serves as both guide and guardian. The Mantle network represents the most sophisticated level of the underworld—where **AI-powered intelligence (NEBULA)** illuminates the path forward, **ancient trees (Treehouse Protocol)** offer shelter and growth for staked assets, **grand lending houses (Lendle Protocol)** provide resources for the journey ahead, and **mystical traders (Merchant Moe)** facilitate the exchange of essential provisions.
+
+Each protocol interaction within the Mantle realm is a trial that strengthens the soul's (user's) position in the digital underworld. The **NEBULA AI** acts as the oracle, providing visions and insights about the optimal path through the maze of DeFi possibilities. The **Treehouse Protocol** offers sanctuary where cmETH tokens can rest and multiply, growing stronger with time. The **Lendle Protocol** serves as the underworld's treasury, where MNT and USDT can be deposited as offerings for future rewards. Finally, **Merchant Moe** operates the sacred marketplace where assets transform through optimal exchange rates and routing.
+
+Today, **💀MictlAI💀** emerges as a digital guardian of the blockchain underworld, facilitating seamless passage between disparate realms. Just as Mictlantecuhtli guided souls through Mictlan's levels, **MictlAI guides your assets across the complex landscape of multiple blockchains, with special mastery over the Mantle network's intricate pathways.**
+
+The journey of your tokens—from **Base to Arbitrum, Mantle to zkSync Era**—mirrors the soul's journey through Mictlan's territories. With MictlAI as your guide, these journeys become seamless, secure, and swift. **In the Mantle Quest, your assets don't merely pass through—they evolve, earning yield, gaining utility, and unlocking new possibilities through AI-powered interactions.**
+
+Where **traditional bridges have failed through hacks and exploits**, **💀MictlAI💀**'s atomic swap mechanism creates a **direct, trustless pathway between blockchain worlds**—a pathway guarded by the wisdom of AI and the security of decentralized protocols. **The Mantle Quest represents the pinnacle of this evolution, where crossing between worlds isn't just about moving assets, but about discovering new realms of possibility through intelligent DeFi interactions.**
 
 ## 🚀 MictlAI: The Mantle Quest
 
