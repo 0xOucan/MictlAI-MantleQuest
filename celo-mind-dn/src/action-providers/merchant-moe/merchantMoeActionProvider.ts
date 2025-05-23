@@ -126,7 +126,7 @@ export class MerchantMoeActionProvider extends ActionProvider<EvmWalletProvider>
   private async getTokenAllowance(
     tokenAddress: `0x${string}`,
     ownerAddress: string,
-    spenderAddress: `0x${string}` = MERCHANT_MOE_ROUTER_ADDRESS
+    spenderAddress: `0x${string}` = MERCHANT_MOE_ROUTER_ADDRESS as `0x${string}`
   ): Promise<bigint> {
     try {
       return await this.publicClient.readContract({
@@ -197,7 +197,7 @@ export class MerchantMoeActionProvider extends ActionProvider<EvmWalletProvider>
     if (!isAddress(address)) {
       throw new Error(`Invalid address format: ${address}`);
     }
-    return getAddress(address);
+    return getAddress(address) as `0x${string}`;
   }
 
   /**
@@ -237,9 +237,9 @@ export class MerchantMoeActionProvider extends ActionProvider<EvmWalletProvider>
 
       // Check current allowance
       const currentAllowance = await this.getTokenAllowance(
-        tokenAddress,
+        tokenAddress as `0x${string}`,
         walletAddress,
-        MERCHANT_MOE_ROUTER_ADDRESS
+        MERCHANT_MOE_ROUTER_ADDRESS as `0x${string}`
       );
 
       console.log(`Current ${params.token} allowance: ${formatUnits(currentAllowance, tokenInfo.decimals)}`);
@@ -432,7 +432,7 @@ export class MerchantMoeActionProvider extends ActionProvider<EvmWalletProvider>
       
       // Check user's USDT balance
       const usdtBalance = await this.getTokenBalance(
-        sourceToken.address,
+        sourceToken.address as `0x${string}`,
         walletAddress
       );
       
@@ -449,10 +449,10 @@ export class MerchantMoeActionProvider extends ActionProvider<EvmWalletProvider>
       let usdtAllowance;
       try {
         usdtAllowance = await this.publicClient.readContract({
-          address: sourceToken.address,
+          address: sourceToken.address as `0x${string}`,
           abi: ERC20_ABI,
           functionName: "allowance",
-          args: [walletAddress as `0x${string}`, MERCHANT_MOE_ROUTER_ADDRESS],
+          args: [walletAddress as `0x${string}`, MERCHANT_MOE_ROUTER_ADDRESS as `0x${string}`],
         }) as bigint;
         
         console.log(`Current USDT allowance for ${walletAddress}: ${formatUnits(usdtAllowance, sourceToken.decimals)} USDT`);

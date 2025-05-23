@@ -9,13 +9,13 @@ export const MANTLE_NAME = 'Mantle';
 export const MANTLE_EXPLORER_URL = 'https://mantlescan.xyz';
 
 // Contract addresses with proper EIP-55 checksums
-export const MERCHANT_MOE_ROUTER_ADDRESS = getAddress('0x45A62B090DF48243F12A21897e7ed91863E2c86b');
-export const USDT_ADDRESS = getAddress('0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE');
-export const WMNT_ADDRESS = getAddress('0x78c1b0c915c4faA5fFfa6cABF0219DA63D7F4CB8'); // Wrapped MNT token
+export const MERCHANT_MOE_ROUTER_ADDRESS = getAddress('0x45A62B090DF48243F12A21897e7ed91863E2c86b') as `0x${string}`;
+export const USDT_ADDRESS = getAddress('0x201EBa5CC46D216Ce6DC03F6a759e8E766e956aE') as `0x${string}`;
+export const WMNT_ADDRESS = getAddress('0x78c1b0c915c4faA5fFfa6cABF0219DA63D7F4CB8') as `0x${string}`; // Wrapped MNT token
 
 // Route logic addresses with proper EIP-55 checksums
-export const LOGIC_ROUTER_ADDRESS = getAddress('0xb35033d71cF5E13cAB5eB8618260F94363Dff9Cf'); // From MNT to USDT example
-export const LOGIC_ROUTER_ADDRESS_ALT = getAddress('0xc04f291347d21dc663f7646056db22bff8ce8430'); // From USDT to MNT example
+export const LOGIC_ROUTER_ADDRESS = getAddress('0xb35033d71cF5E13cAB5eB8618260F94363Dff9Cf') as `0x${string}`; // From MNT to USDT example
+export const LOGIC_ROUTER_ADDRESS_ALT = getAddress('0xc04f291347d21dc663f7646056db22bff8ce8430') as `0x${string}`; // From USDT to MNT example
 
 // Token decimals
 export const MNT_DECIMALS = 18;
@@ -34,14 +34,14 @@ export const TOKENS = {
     symbol: 'WMNT',
     name: 'Wrapped Mantle',
     decimals: MNT_DECIMALS,
-    address: WMNT_ADDRESS,
+    address: WMNT_ADDRESS as `0x${string}`,
     isNative: false
   },
   USDT: {
     symbol: 'USDT',
     name: 'Tether USD',
     decimals: USDT_DECIMALS,
-    address: USDT_ADDRESS,
+    address: USDT_ADDRESS as `0x${string}`,
     isNative: false
   }
 };

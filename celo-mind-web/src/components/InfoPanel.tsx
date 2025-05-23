@@ -59,10 +59,10 @@ export default function InfoPanel({ onActivateAgent }: InfoPanelProps) {
             </p>
           </div>
           <div className="p-6">
-            <div className="text-2xl mb-2 pixel-pulse">🤖</div>
-            <h3 className="font-pixel font-bold text-mictlai-gold text-lg mb-2">AI-POWERED</h3>
+            <div className="text-2xl mb-2 pixel-pulse">🧠</div>
+            <h3 className="font-pixel font-bold text-mictlai-gold text-lg mb-2">NEBULA AI</h3>
             <p className="text-mictlai-bone/70 font-pixel text-sm">
-              INTELLIGENT ASSISTANCE FOR BLOCKCHAIN INTEROPERABILITY
+              ADVANCED AI ANALYSIS FOR DEFI STRATEGIES AND BLOCKCHAIN INSIGHTS
             </p>
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function InfoPanel({ onActivateAgent }: InfoPanelProps) {
           </li>
           <li className="flex items-start">
             <span className="inline-block mr-2 text-mictlai-gold">▸</span>
-            <span><span className="font-medium text-mictlai-gold">MANTLE NETWORK:</span> BRIDGE ASSETS BETWEEN MANTLE AND OTHER NETWORKS, STAKE CMETH IN TREEHOUSE PROTOCOL, SUPPLY MNT AND USDT AS COLLATERAL IN LENDLE PROTOCOL</span>
+            <span><span className="font-medium text-mictlai-gold">MANTLE NETWORK:</span> BRIDGE ASSETS BETWEEN MANTLE AND OTHER NETWORKS, STAKE CMETH IN TREEHOUSE PROTOCOL, SUPPLY MNT AND USDT AS COLLATERAL IN LENDLE PROTOCOL, ACCESS NEBULA AI FOR ADVANCED DEFI ANALYSIS AND NATURAL LANGUAGE BLOCKCHAIN INSIGHTS</span>
           </li>
           <li className="flex items-start">
             <span className="inline-block mr-2 text-mictlai-gold">▸</span>

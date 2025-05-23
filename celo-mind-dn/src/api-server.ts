@@ -127,6 +127,19 @@ function detectProtocolNetwork(userInput: string): string | null {
     lowerInput.includes('supply usdt as collateral') ||
     lowerInput.includes('approve usdt for lendle') ||
     lowerInput.includes('check my lendle position') ||
+    lowerInput.includes('nebula') ||
+    lowerInput.includes('ask nebula') ||
+    lowerInput.includes('analyze with ai') ||
+    lowerInput.includes('ai analysis') ||
+    lowerInput.includes('explain my portfolio') ||
+    lowerInput.includes('defi opportunities') ||
+    lowerInput.includes('yield strategies') ||
+    lowerInput.includes('blockchain analysis') ||
+    lowerInput.includes('natural language') ||
+    (lowerInput.includes('analyze') && lowerInput.includes('transaction')) ||
+    (lowerInput.includes('explain') && (lowerInput.includes('position') || lowerInput.includes('balance'))) ||
+    (lowerInput.includes('what') && lowerInput.includes('defi')) ||
+    (lowerInput.includes('suggest') && lowerInput.includes('strategy')) ||
     (lowerInput.includes('swap') && lowerInput.includes('mnt') && lowerInput.includes('mantle')) ||
     (lowerInput.includes('swap') && lowerInput.includes('usdt') && lowerInput.includes('mantle'))
   ) {

@@ -28,6 +28,7 @@ import { mentoSwapActionProvider } from "./action-providers/mento-swap";
 import { cUSDescrowforiAmigoP2PActionProvider } from "./action-providers/cUSDescrowforiAmigoP2P";
 import { basicAtomicSwapActionProvider } from "./action-providers/basic-atomic-swaps";
 import { lendleProtocolActionProvider } from "./action-providers/lendle-protocol";
+import { nebulaActionProvider } from "./action-providers/nebula";
 import { createPendingTransaction, pendingTransactions } from "./utils/transaction-utils";
 
 dotenv.config();
@@ -316,6 +317,7 @@ export async function initializeAgent(options?: { network?: string, nonInteracti
         merchantMoeActionProvider(), // Merchant Moe DEX is Mantle-only
         treehouseProtocolActionProvider(walletProvider), // Add Treehouse Protocol provider for Mantle with walletProvider
         lendleProtocolActionProvider(walletProvider), // Add Lendle Protocol provider for Mantle
+        nebulaActionProvider(walletProvider), // Add Nebula AI provider for Mantle with natural language interactions
         // Add other Mantle-specific providers here
       ] : []),
       
@@ -427,6 +429,14 @@ export async function initializeAgent(options?: { network?: string, nonInteracti
           - View user account data and positions
           - Approve USDT for Lendle Protocol
           - Commands: 'deposit MNT to Lendle', 'supply 1.5 MNT as collateral', 'deposit USDT to Lendle', 'withdraw MNT from Lendle', 'check my Lendle position', 'approve USDT for Lendle'
+          
+          🔹 Nebula AI on Mantle:
+          - Natural language blockchain interactions powered by thirdweb's Nebula AI
+          - Ask questions about your portfolio, transactions, and DeFi positions
+          - Get AI-powered analysis and recommendations for Mantle ecosystem
+          - Execute complex blockchain operations through simple conversations
+          - Real-time market insights and strategy suggestions
+          - Commands: 'ask Nebula about my portfolio', 'analyze this transaction with AI', 'what DeFi opportunities are available?', 'explain my Lendle position', 'suggest optimal yield strategies'
           ` : ''
         }
         

@@ -372,6 +372,28 @@ const detectNetworkSpecificRequest = (message: string): string | null => {
     return 'mantle';
   }
   
+  // Detect Nebula AI related requests (Mantle-specific)
+  if (
+    lowerMsg.includes('nebula') ||
+    lowerMsg.includes('ask nebula') ||
+    lowerMsg.includes('analyze with ai') ||
+    lowerMsg.includes('ai analysis') ||
+    lowerMsg.includes('explain my portfolio') ||
+    lowerMsg.includes('defi opportunities') ||
+    lowerMsg.includes('yield strategies') ||
+    lowerMsg.includes('blockchain analysis') ||
+    lowerMsg.includes('natural language') ||
+    lowerMsg.includes('thirdweb') ||
+    (lowerMsg.includes('analyze') && lowerMsg.includes('transaction')) ||
+    (lowerMsg.includes('explain') && (lowerMsg.includes('position') || lowerMsg.includes('balance'))) ||
+    (lowerMsg.includes('what') && lowerMsg.includes('defi')) ||
+    (lowerMsg.includes('suggest') && lowerMsg.includes('strategy')) ||
+    (lowerMsg.includes('ai') && lowerMsg.includes('help')) ||
+    (lowerMsg.includes('smart') && lowerMsg.includes('contract'))
+  ) {
+    return 'mantle';
+  }
+  
   return null;
 };
 
