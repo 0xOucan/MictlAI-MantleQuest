@@ -95,7 +95,7 @@ export default function InfoPanel({ onActivateAgent }: InfoPanelProps) {
           </li>
           <li className="flex items-start">
             <span className="inline-block mr-2 text-mictlai-gold">▸</span>
-            <span><span className="font-medium text-mictlai-gold">MANTLE NETWORK:</span> BRIDGE ASSETS BETWEEN MANTLE AND OTHER NETWORKS, STAKE CMETH IN TREEHOUSE PROTOCOL</span>
+            <span><span className="font-medium text-mictlai-gold">MANTLE NETWORK:</span> BRIDGE ASSETS BETWEEN MANTLE AND OTHER NETWORKS, STAKE CMETH IN TREEHOUSE PROTOCOL, SUPPLY MNT AND USDT AS COLLATERAL IN LENDLE PROTOCOL</span>
           </li>
           <li className="flex items-start">
             <span className="inline-block mr-2 text-mictlai-gold">▸</span>

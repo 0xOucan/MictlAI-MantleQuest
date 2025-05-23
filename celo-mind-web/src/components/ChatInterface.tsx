@@ -355,6 +355,23 @@ const detectNetworkSpecificRequest = (message: string): string | null => {
     return 'mantle';
   }
   
+  // Detect Lendle Protocol related requests (Mantle-specific)
+  if (
+    lowerMsg.includes('lendle protocol') ||
+    lowerMsg.includes('lendle') ||
+    lowerMsg.includes('deposit mnt') ||
+    lowerMsg.includes('supply mnt') ||
+    lowerMsg.includes('withdraw mnt') ||
+    lowerMsg.includes('deposit usdt to lendle') ||
+    lowerMsg.includes('supply usdt as collateral') ||
+    lowerMsg.includes('approve usdt for lendle') ||
+    lowerMsg.includes('check my lendle position') ||
+    lowerMsg.includes('mnt as collateral') ||
+    lowerMsg.includes('usdt as collateral')
+  ) {
+    return 'mantle';
+  }
+  
   return null;
 };
 

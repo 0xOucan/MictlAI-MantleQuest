@@ -27,6 +27,7 @@ import { balanceCheckerActionProvider } from "./action-providers/balance-checker
 import { mentoSwapActionProvider } from "./action-providers/mento-swap";
 import { cUSDescrowforiAmigoP2PActionProvider } from "./action-providers/cUSDescrowforiAmigoP2P";
 import { basicAtomicSwapActionProvider } from "./action-providers/basic-atomic-swaps";
+import { lendleProtocolActionProvider } from "./action-providers/lendle-protocol";
 import { createPendingTransaction, pendingTransactions } from "./utils/transaction-utils";
 
 dotenv.config();
@@ -314,6 +315,7 @@ export async function initializeAgent(options?: { network?: string, nonInteracti
         initCapitalActionProvider(),
         merchantMoeActionProvider(), // Merchant Moe DEX is Mantle-only
         treehouseProtocolActionProvider(walletProvider), // Add Treehouse Protocol provider for Mantle with walletProvider
+        lendleProtocolActionProvider(walletProvider), // Add Lendle Protocol provider for Mantle
         // Add other Mantle-specific providers here
       ] : []),
       
@@ -417,6 +419,14 @@ export async function initializeAgent(options?: { network?: string, nonInteracti
           - Withdraw staked cmETH tokens
           - View staking data and balances
           - Commands: 'stake cmETH', 'approve cmETH for staking', 'withdraw staked cmETH', 'view staking data'
+          
+          🔹 Lendle Protocol on Mantle:
+          - Supply MNT as collateral to earn yield
+          - Supply USDT as collateral to earn yield
+          - Withdraw MNT collateral from positions
+          - View user account data and positions
+          - Approve USDT for Lendle Protocol
+          - Commands: 'deposit MNT to Lendle', 'supply 1.5 MNT as collateral', 'deposit USDT to Lendle', 'withdraw MNT from Lendle', 'check my Lendle position', 'approve USDT for Lendle'
           ` : ''
         }
         

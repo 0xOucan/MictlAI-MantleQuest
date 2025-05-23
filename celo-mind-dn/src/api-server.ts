@@ -118,6 +118,15 @@ function detectProtocolNetwork(userInput: string): string | null {
     lowerInput.includes('treehouse') ||
     lowerInput.includes('stake cmeth') ||
     lowerInput.includes('cmeth staking') ||
+    lowerInput.includes('lendle protocol') ||
+    lowerInput.includes('lendle') ||
+    lowerInput.includes('deposit mnt') ||
+    lowerInput.includes('supply mnt') ||
+    lowerInput.includes('withdraw mnt') ||
+    lowerInput.includes('deposit usdt to lendle') ||
+    lowerInput.includes('supply usdt as collateral') ||
+    lowerInput.includes('approve usdt for lendle') ||
+    lowerInput.includes('check my lendle position') ||
     (lowerInput.includes('swap') && lowerInput.includes('mnt') && lowerInput.includes('mantle')) ||
     (lowerInput.includes('swap') && lowerInput.includes('usdt') && lowerInput.includes('mantle'))
   ) {
