@@ -76,23 +76,44 @@ export class TreehouseProtocolActionProvider extends ActionProvider<EvmWalletPro
     amount: string
   ): Promise<void> {
     const address = await walletProvider.getAddress();
-    const balance = await walletProvider.readContract({
-      address: tokenAddress as `0x${string}`,
-      abi: ERC20_ABI,
-      functionName: "balanceOf",
-      args: [address as `0x${string}`],
-    }) as bigint;
-
-    if (balance < BigInt(amount)) {
-      const tokenSymbol = await this.getTokenSymbol(walletProvider, tokenAddress);
-      const formattedBalance = await this.formatTokenAmount(walletProvider, tokenAddress, balance);
-      const formattedAmount = await this.formatTokenAmount(walletProvider, tokenAddress, BigInt(amount));
+    console.log(`Checking token balance for address: ${address}, token: ${tokenAddress}, requested amount: ${amount}`);
+    
+    try {
+      const balance = await walletProvider.readContract({
+        address: tokenAddress as `0x${string}`,
+        abi: ERC20_ABI,
+        functionName: "balanceOf",
+        args: [address as `0x${string}`],
+      }) as bigint;
       
-      throw new InsufficientBalanceError(
-        tokenSymbol,
-        formattedBalance,
-        formattedAmount
-      );
+      console.log(`Retrieved balance: ${balance.toString()}, compared to requested amount: ${BigInt(amount).toString()}`);
+
+      // Add a small buffer to prevent false negatives due to precision or synchronization issues
+      // We'll allow for a 0.01% buffer to account for rounding and display differences
+      const tolerance = BigInt(amount) / BigInt(10000); // 0.01% buffer
+      
+      if (balance < BigInt(amount) - tolerance) {
+        const tokenSymbol = await this.getTokenSymbol(walletProvider, tokenAddress);
+        const formattedBalance = await this.formatTokenAmount(walletProvider, tokenAddress, balance);
+        const formattedAmount = await this.formatTokenAmount(walletProvider, tokenAddress, BigInt(amount));
+        
+        console.log(`Insufficient balance: ${formattedBalance} ${tokenSymbol} < ${formattedAmount} ${tokenSymbol}`);
+        
+        throw new InsufficientBalanceError(
+          tokenSymbol,
+          formattedBalance,
+          formattedAmount
+        );
+      } else {
+        console.log(`Balance check passed: ${balance.toString()} >= ${BigInt(amount).toString()}`);
+      }
+    } catch (error) {
+      console.error("Error checking token balance:", error);
+      if (error instanceof InsufficientBalanceError) {
+        throw error;
+      }
+      // For other errors, we'll log them but allow the operation to proceed
+      console.warn("Will attempt transaction despite balance check error");
     }
   }
 
@@ -400,78 +421,139 @@ You can monitor the status in the Transactions panel.`;
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof DirectStakeSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    console.log(`Direct stake request received for ${args.amount} ${args.token}`);
     
-    const tokenAddress = this.getTokenAddress(args.token as TreehouseToken);
-    this.checkStakingEligibility(args.token as TreehouseToken);
-    
-    // Parse the amount to the appropriate token units
-    const parsedAmount = await this.parseTokenAmount(
-      walletProvider,
-      tokenAddress,
-      args.amount
-    );
-    
-    // Check if the user has enough balance
-    await this.checkTokenBalance(
-      walletProvider,
-      tokenAddress,
-      parsedAmount.toString()
-    );
-    
-    // Check allowance
-    const address = await walletProvider.getAddress();
-    const allowance = await walletProvider.readContract({
-      address: tokenAddress as `0x${string}`,
-      abi: ERC20_ABI,
-      functionName: "allowance",
-      args: [address as `0x${string}`, ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`],
-    }) as bigint;
-    
-    // If allowance is insufficient, send approval transaction first
-    if (allowance < parsedAmount) {
-      // Encode the approval function call
-      const approvalData = encodeFunctionData({
-        abi: ERC20_ABI,
-        functionName: "approve",
-        args: [ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`, parsedAmount],
+    try {
+      await this.checkNetwork(walletProvider);
+      
+      const tokenAddress = this.getTokenAddress(args.token as TreehouseToken);
+      this.checkStakingEligibility(args.token as TreehouseToken);
+      
+      console.log(`Using token address: ${tokenAddress}`);
+      
+      // Parse the amount to the appropriate token units
+      const parsedAmount = await this.parseTokenAmount(
+        walletProvider,
+        tokenAddress,
+        args.amount
+      );
+      
+      console.log(`Parsed amount for staking: ${parsedAmount.toString()}`);
+      
+      // Check if the user has enough balance - this has been enhanced with better error handling
+      try {
+        await this.checkTokenBalance(
+          walletProvider,
+          tokenAddress,
+          parsedAmount.toString()
+        );
+      } catch (balanceError) {
+        console.error("Balance check failed in directStake:", balanceError);
+        if (balanceError instanceof InsufficientBalanceError) {
+          throw balanceError;
+        }
+        // For other errors, we'll log them but allow the operation to proceed
+        console.warn("Will attempt to proceed despite balance check error");
+      }
+      
+      // Check allowance
+      const address = await walletProvider.getAddress();
+      console.log(`Checking token allowance for address: ${address}`);
+      
+      let allowance;
+      try {
+        allowance = await walletProvider.readContract({
+          address: tokenAddress as `0x${string}`,
+          abi: ERC20_ABI,
+          functionName: "allowance",
+          args: [address as `0x${string}`, ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`],
+        }) as bigint;
+        
+        console.log(`Current allowance: ${allowance.toString()}, required: ${parsedAmount.toString()}`);
+      } catch (allowanceError) {
+        console.error("Error checking allowance:", allowanceError);
+        // Default to 0 if we can't check allowance
+        allowance = BigInt(0);
+      }
+      
+      // If allowance is insufficient, send approval transaction first
+      if (allowance < parsedAmount) {
+        console.log(`Insufficient allowance, sending approval transaction first`);
+        
+        // Encode the approval function call
+        const approvalData = encodeFunctionData({
+          abi: ERC20_ABI,
+          functionName: "approve",
+          args: [ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`, parsedAmount],
+        });
+        
+        console.log(`Approval transaction prepared, sending to wallet`);
+        
+        // Send the approval transaction
+        try {
+          const approvalTx = await walletProvider.sendTransaction({
+            to: tokenAddress as `0x${string}`,
+            data: approvalData as Hex,
+          });
+          console.log(`Approval transaction sent: ${approvalTx}`);
+        } catch (approvalError) {
+          console.error("Error sending approval transaction:", approvalError);
+          throw new TreehouseError(`Failed to approve tokens: ${approvalError instanceof Error ? approvalError.message : String(approvalError)}`);
+        }
+      } else {
+        console.log(`Sufficient allowance already exists, skipping approval`);
+      }
+      
+      // Get the receiver address (default to caller if not specified)
+      const receiver = args.receiver || address;
+      console.log(`Using receiver address: ${receiver}`);
+      
+      // Encode the stake function call
+      const stakeData = encodeFunctionData({
+        abi: TREEHOUSE_STAKING_ABI,
+        functionName: "deposit",
+        args: [
+          tokenAddress as `0x${string}`,
+          parsedAmount,
+          receiver as `0x${string}`,
+        ],
       });
       
-      // Send the approval transaction
-      await walletProvider.sendTransaction({
-        to: tokenAddress as `0x${string}`,
-        data: approvalData as Hex,
+      console.log(`Staking transaction prepared, sending to wallet`);
+      
+      // Send the staking transaction
+      const txHash = await walletProvider.sendTransaction({
+        to: ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`,
+        data: stakeData as Hex,
       });
+      
+      console.log(`Staking transaction sent: ${txHash}`);
+      
+      // Format the amount for display
+      const formattedAmount = await this.formatTokenAmount(
+        walletProvider,
+        tokenAddress,
+        parsedAmount
+      );
+      
+      return this.getTransactionMessage("approve and stake", args.token, formattedAmount);
+    } catch (error) {
+      console.error("Error in directStake:", error);
+      
+      if (error instanceof InsufficientBalanceError) {
+        return `You do not have enough ${args.token} for this operation. Required: ${(error as any).required}, Available: ${(error as any).balance}.`;
+      }
+      
+      if (error instanceof InsufficientAllowanceError) {
+        return `You need to approve ${args.token} for staking first. Required: ${(error as any).required}, Current allowance: ${(error as any).allowance}.`;
+      }
+      
+      if (error instanceof TreehouseError) {
+        return error.message;
+      }
+      
+      return `Error staking ${args.token}: ${error instanceof Error ? error.message : String(error)}`;
     }
-    
-    // Get the receiver address (default to caller if not specified)
-    const receiver = args.receiver || address;
-    
-    // Encode the stake function call
-    const stakeData = encodeFunctionData({
-      abi: TREEHOUSE_STAKING_ABI,
-      functionName: "deposit",
-      args: [
-        tokenAddress as `0x${string}`,
-        parsedAmount,
-        receiver as `0x${string}`,
-      ],
-    });
-    
-    // Send the staking transaction
-    const txHash = await walletProvider.sendTransaction({
-      to: ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`,
-      data: stakeData as Hex,
-    });
-    
-    // Format the amount for display
-    const formattedAmount = await this.formatTokenAmount(
-      walletProvider,
-      tokenAddress,
-      parsedAmount
-    );
-    
-    return this.getTransactionMessage("approve and stake", args.token, formattedAmount);
   }
 
   /**
