@@ -75,11 +75,11 @@ export class TreehouseProtocolActionProvider extends ActionProvider<EvmWalletPro
     tokenAddress: string,
     amount: string
   ): Promise<void> {
-    const address = await walletProvider.getAddress();
+    const address = await this.walletProvider.getAddress();
     console.log(`Checking token balance for address: ${address}, token: ${tokenAddress}, requested amount: ${amount}`);
     
     try {
-      const balance = await walletProvider.readContract({
+      const balance = await this.walletProvider.readContract({
         address: tokenAddress as `0x${string}`,
         abi: ERC20_ABI,
         functionName: "balanceOf",
@@ -126,8 +126,8 @@ export class TreehouseProtocolActionProvider extends ActionProvider<EvmWalletPro
     spender: string,
     amount: string
   ): Promise<void> {
-    const address = await walletProvider.getAddress();
-    const allowance = await walletProvider.readContract({
+    const address = await this.walletProvider.getAddress();
+    const allowance = await this.walletProvider.readContract({
       address: tokenAddress as `0x${string}`,
       abi: ERC20_ABI,
       functionName: "allowance",
@@ -274,7 +274,7 @@ You can monitor the status in the Transactions panel.`;
     tokenAddress: string
   ): Promise<bigint> {
     try {
-      return await walletProvider.readContract({
+      return await this.walletProvider.readContract({
         address: ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`,
         abi: TREEHOUSE_STAKING_ABI,
         functionName: "stakedBalances",
@@ -298,20 +298,20 @@ You can monitor the status in the Transactions panel.`;
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof ApproveTokenSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    await this.checkNetwork(this.walletProvider);
     
     const tokenAddress = this.getTokenAddress(args.token as TreehouseToken);
     
     // Parse the amount to the appropriate token units
     const parsedAmount = await this.parseTokenAmount(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       args.amount
     );
     
     // Check if the user has enough balance
     await this.checkTokenBalance(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       parsedAmount.toString()
     );
@@ -324,14 +324,14 @@ You can monitor the status in the Transactions panel.`;
     });
     
     // Send the transaction
-    const txHash = await walletProvider.sendTransaction({
+    const txHash = await this.walletProvider.sendTransaction({
       to: tokenAddress as `0x${string}`,
       data: data as Hex,
     });
     
     // Format the amount for display
     const formattedAmount = await this.formatTokenAmount(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       parsedAmount
     );
@@ -351,35 +351,35 @@ You can monitor the status in the Transactions panel.`;
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof StakeTokensSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    await this.checkNetwork(this.walletProvider);
     
     const tokenAddress = this.getTokenAddress(args.token as TreehouseToken);
     this.checkStakingEligibility(args.token as TreehouseToken);
     
     // Parse the amount to the appropriate token units
     const parsedAmount = await this.parseTokenAmount(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       args.amount
     );
     
     // Check if the user has enough balance
     await this.checkTokenBalance(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       parsedAmount.toString()
     );
     
     // Check if the user has enough allowance
     await this.checkTokenAllowance(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       ChainConstants.TREEHOUSE_STAKING_CONTRACT,
       parsedAmount.toString()
     );
     
     // Get the receiver address (default to caller if not specified)
-    const callerAddress = await walletProvider.getAddress();
+    const callerAddress = await this.walletProvider.getAddress();
     const receiver = args.receiver || callerAddress;
     
     // Encode the stake function call
@@ -394,14 +394,14 @@ You can monitor the status in the Transactions panel.`;
     });
     
     // Send the transaction
-    const txHash = await walletProvider.sendTransaction({
+    const txHash = await this.walletProvider.sendTransaction({
       to: ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`,
       data: data as Hex,
     });
     
     // Format the amount for display
     const formattedAmount = await this.formatTokenAmount(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       parsedAmount
     );
@@ -424,7 +424,7 @@ You can monitor the status in the Transactions panel.`;
     console.log(`Direct stake request received for ${args.amount} ${args.token}`);
     
     try {
-      await this.checkNetwork(walletProvider);
+      await this.checkNetwork(this.walletProvider);
       
       const tokenAddress = this.getTokenAddress(args.token as TreehouseToken);
       this.checkStakingEligibility(args.token as TreehouseToken);
@@ -433,7 +433,7 @@ You can monitor the status in the Transactions panel.`;
       
       // Parse the amount to the appropriate token units
       const parsedAmount = await this.parseTokenAmount(
-        walletProvider,
+        this.walletProvider,
         tokenAddress,
         args.amount
       );
@@ -443,7 +443,7 @@ You can monitor the status in the Transactions panel.`;
       // Check if the user has enough balance - this has been enhanced with better error handling
       try {
         await this.checkTokenBalance(
-          walletProvider,
+          this.walletProvider,
           tokenAddress,
           parsedAmount.toString()
         );
@@ -457,12 +457,12 @@ You can monitor the status in the Transactions panel.`;
       }
       
       // Check allowance
-      const address = await walletProvider.getAddress();
+      const address = await this.walletProvider.getAddress();
       console.log(`Checking token allowance for address: ${address}`);
       
       let allowance;
       try {
-        allowance = await walletProvider.readContract({
+        allowance = await this.walletProvider.readContract({
           address: tokenAddress as `0x${string}`,
           abi: ERC20_ABI,
           functionName: "allowance",
@@ -491,7 +491,7 @@ You can monitor the status in the Transactions panel.`;
         
         // Send the approval transaction
         try {
-          const approvalTx = await walletProvider.sendTransaction({
+          const approvalTx = await this.walletProvider.sendTransaction({
             to: tokenAddress as `0x${string}`,
             data: approvalData as Hex,
           });
@@ -522,7 +522,7 @@ You can monitor the status in the Transactions panel.`;
       console.log(`Staking transaction prepared, sending to wallet`);
       
       // Send the staking transaction
-      const txHash = await walletProvider.sendTransaction({
+      const txHash = await this.walletProvider.sendTransaction({
         to: ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`,
         data: stakeData as Hex,
       });
@@ -531,7 +531,7 @@ You can monitor the status in the Transactions panel.`;
       
       // Format the amount for display
       const formattedAmount = await this.formatTokenAmount(
-        walletProvider,
+        this.walletProvider,
         tokenAddress,
         parsedAmount
       );
@@ -568,16 +568,16 @@ You can monitor the status in the Transactions panel.`;
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof WithdrawStakedSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    await this.checkNetwork(this.walletProvider);
     
     const tokenAddress = this.getTokenAddress(args.token as TreehouseToken);
     
     // Get the user's address
-    const address = await walletProvider.getAddress();
+    const address = await this.walletProvider.getAddress();
     
     // Get the user's staked balance
     const stakedBalance = await this.getUserStakedBalance(
-      walletProvider,
+      this.walletProvider,
       address,
       tokenAddress
     );
@@ -590,7 +590,7 @@ You can monitor the status in the Transactions panel.`;
     } else {
       // Parse the amount to the appropriate token units
       amountToWithdraw = await this.parseTokenAmount(
-        walletProvider,
+        this.walletProvider,
         tokenAddress,
         args.amount
       );
@@ -598,14 +598,14 @@ You can monitor the status in the Transactions panel.`;
     
     // Check if the user has enough staked balance
     if (stakedBalance < amountToWithdraw) {
-      const tokenSymbol = await this.getTokenSymbol(walletProvider, tokenAddress);
+      const tokenSymbol = await this.getTokenSymbol(this.walletProvider, tokenAddress);
       const formattedStakedBalance = await this.formatTokenAmount(
-        walletProvider,
+        this.walletProvider,
         tokenAddress,
         stakedBalance
       );
       const formattedWithdrawAmount = await this.formatTokenAmount(
-        walletProvider,
+        this.walletProvider,
         tokenAddress,
         amountToWithdraw
       );
@@ -632,14 +632,14 @@ You can monitor the status in the Transactions panel.`;
     });
     
     // Send the transaction
-    const txHash = await walletProvider.sendTransaction({
+    const txHash = await this.walletProvider.sendTransaction({
       to: ChainConstants.TREEHOUSE_STAKING_CONTRACT as `0x${string}`,
       data: data as Hex,
     });
     
     // Format the amount for display
     const formattedAmount = await this.formatTokenAmount(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       amountToWithdraw
     );
@@ -659,28 +659,28 @@ You can monitor the status in the Transactions panel.`;
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof GetUserStakingDataSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    await this.checkNetwork(this.walletProvider);
     
     // Get the address to check
-    const address = args.address || await walletProvider.getAddress();
+    const address = args.address || await this.walletProvider.getAddress();
     
     // Get the staked balance for cmETH
     const tokenAddress = this.getTokenAddress(TreehouseToken.CM_ETH);
     const stakedBalance = await this.getUserStakedBalance(
-      walletProvider,
+      this.walletProvider,
       address,
       tokenAddress
     );
     
     // Format the staked balance
     const formattedStakedBalance = await this.formatTokenAmount(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       stakedBalance
     );
     
     // Get token balance
-    const tokenBalance = await walletProvider.readContract({
+    const tokenBalance = await this.walletProvider.readContract({
       address: tokenAddress as `0x${string}`,
       abi: ERC20_ABI,
       functionName: "balanceOf",
@@ -689,7 +689,7 @@ You can monitor the status in the Transactions panel.`;
     
     // Format the token balance
     const formattedTokenBalance = await this.formatTokenAmount(
-      walletProvider,
+      this.walletProvider,
       tokenAddress,
       tokenBalance
     );

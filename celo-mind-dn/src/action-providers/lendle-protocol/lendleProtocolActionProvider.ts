@@ -316,7 +316,7 @@ You can monitor the status in the Transactions panel.`;
   ): Promise<any> {
     try {
       console.log(`Reading account data from Lendle Lending Pool for ${userAddress}`);
-      const result = await walletProvider.readContract({
+      const result = await this.walletProvider.readContract({
         address: ChainConstants.LENDLE_LENDING_POOL as `0x${string}`,
         abi: LENDLE_LENDING_POOL_ABI,
         functionName: "getUserAccountData",
@@ -351,16 +351,16 @@ You can monitor the status in the Transactions panel.`;
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof GetUserAccountDataSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    await this.checkNetwork(this.walletProvider);
     
     // Get the address to check
-    const address = args.address || await walletProvider.getAddress();
+    const address = args.address || await this.walletProvider.getAddress();
     console.log(`Getting account data for address: ${address}`);
     
     try {
       // Get the user's account data
       const accountData = await this.getUserAccountDataRaw(
-        walletProvider,
+        this.walletProvider,
         address
       );
       
@@ -386,7 +386,7 @@ You can monitor the status in the Transactions panel.`;
         nativeBalance = await this.getWalletMNTBalance(address);
       } catch (error) {
         console.warn(`Failed to get direct balance, falling back to wallet provider:`, error);
-        nativeBalance = await walletProvider.getBalance();
+        nativeBalance = await this.walletProvider.getBalance();
       }
       
       const formattedNativeBalance = formatUnits(nativeBalance, 18);
@@ -420,7 +420,7 @@ Your health factor is a key risk indicator. A value below 1.0 will result in liq
         nativeBalance = await this.getWalletMNTBalance(address);
       } catch (directError) {
         console.warn(`Failed to get direct balance, falling back to wallet provider:`, directError);
-        nativeBalance = await walletProvider.getBalance();
+        nativeBalance = await this.walletProvider.getBalance();
       }
       
       const formattedNativeBalance = formatUnits(nativeBalance, 18);
@@ -455,7 +455,7 @@ You can use your MNT to supply collateral to Lendle Protocol.
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof DepositMNTSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    await this.checkNetwork(this.walletProvider);
     
     // Parse the amount to the appropriate token units
     const parsedAmount = this.parseMNTAmount(args.amount);
@@ -463,12 +463,12 @@ You can use your MNT to supply collateral to Lendle Protocol.
     
     // Check if the user has enough balance
     await this.checkMNTBalance(
-      walletProvider,
+      this.walletProvider,
       parsedAmount
     );
     
     // Get the caller's address
-    const callerAddress = await walletProvider.getAddress();
+    const callerAddress = await this.walletProvider.getAddress();
     
     // Get the onBehalfOf address (default to caller if not specified)
     const onBehalfOf = args.onBehalfOf || callerAddress;
@@ -501,7 +501,7 @@ You can use your MNT to supply collateral to Lendle Protocol.
     
     // Send the transaction
     try {
-      const txHash = await walletProvider.sendTransaction(txRequest);
+      const txHash = await this.walletProvider.sendTransaction(txRequest);
       console.log(`Transaction sent! Hash: ${txHash}`);
       
       // Format the amount for display
@@ -528,10 +528,10 @@ You can use your MNT to supply collateral to Lendle Protocol.
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof WithdrawMNTSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    await this.checkNetwork(this.walletProvider);
     
     // Get the user's address
-    const address = await walletProvider.getAddress();
+    const address = await this.walletProvider.getAddress();
     console.log(`Withdrawing MNT for address: ${address}`);
     
     // Get native MNT balance directly to confirm we're using the right wallet
@@ -544,7 +544,7 @@ You can use your MNT to supply collateral to Lendle Protocol.
     
     // Get the user's account data
     const accountData = await this.getUserAccountDataRaw(
-      walletProvider,
+      this.walletProvider,
       address
     );
     
@@ -614,7 +614,7 @@ You can use your MNT to supply collateral to Lendle Protocol.
     console.log(`Sending withdrawal transaction`);
     
     // Send the transaction
-    const txHash = await walletProvider.sendTransaction({
+    const txHash = await this.walletProvider.sendTransaction({
       to: ChainConstants.LENDLE_WETH_GATEWAY as `0x${string}`,
       data: data as Hex,
     });
@@ -639,13 +639,13 @@ You can use your MNT to supply collateral to Lendle Protocol.
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof ApproveUSDTSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    await this.checkNetwork(this.walletProvider);
     
     // Get the caller's address
-    const callerAddress = await walletProvider.getAddress();
+    const callerAddress = await this.walletProvider.getAddress();
     
     // Get current USDT balance
-    const balance = await this.getWalletUSDTBalance(walletProvider, callerAddress);
+    const balance = await this.getWalletUSDTBalance(this.walletProvider, callerAddress);
     
     // Parse the amount to the appropriate token units or use maximum if "-1"
     let parsedAmount: bigint;
@@ -699,7 +699,7 @@ You can use your MNT to supply collateral to Lendle Protocol.
         }
       );
       
-      const txHash = await walletProvider.sendTransaction({
+      const txHash = await this.walletProvider.sendTransaction({
         to: ChainConstants.USDT_TOKEN as `0x${string}`,
         data: data as Hex,
         value: BigInt(0),
@@ -735,7 +735,7 @@ You can monitor the status in the Transactions panel.`;
     walletProvider: EvmWalletProvider,
     args: z.infer<typeof DepositUSDTSchema>
   ): Promise<string> {
-    await this.checkNetwork(walletProvider);
+    await this.checkNetwork(this.walletProvider);
     
     // Parse the amount to the appropriate token units
     const parsedAmount = this.parseUSDTAmount(args.amount);
@@ -743,18 +743,18 @@ You can monitor the status in the Transactions panel.`;
     
     // Check if the user has enough USDT balance
     await this.checkUSDTBalance(
-      walletProvider,
+      this.walletProvider,
       parsedAmount
     );
     
     // Check if the user has enough allowance
     await this.checkUSDTAllowance(
-      walletProvider,
+      this.walletProvider,
       parsedAmount
     );
     
     // Get the caller's address
-    const callerAddress = await walletProvider.getAddress();
+    const callerAddress = await this.walletProvider.getAddress();
     
     // Get the onBehalfOf address (default to caller if not specified)
     const onBehalfOf = args.onBehalfOf || callerAddress;
@@ -795,7 +795,7 @@ You can monitor the status in the Transactions panel.`;
         }
       );
       
-      const txHash = await walletProvider.sendTransaction({
+      const txHash = await this.walletProvider.sendTransaction({
         to: ChainConstants.LENDLE_LENDING_POOL as `0x${string}`,
         data: data as Hex,
         value: BigInt(0),
