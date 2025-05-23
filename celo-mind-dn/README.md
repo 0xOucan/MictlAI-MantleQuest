@@ -3,6 +3,9 @@
 ## 📑 Table of Contents
 - [Overview](#-overview)
 - [The MictlAI Legend](#-the-mictlai-legend)
+- [MictlAI: The Mantle Quest](#-mictlai-the-mantle-quest)
+- [🤖 NEBULA AI Integration](#-nebula-ai-integration)
+- [Mantle Network Action Providers](#-mantle-network-action-providers)
 - [Recent Improvements](#-recent-improvements)
 - [Contract Information](#-contract-information)
 - [Quick Start](#-quick-start)
@@ -23,6 +26,8 @@ MictlAI is an AI-powered cross-chain bridge that connects the Base, Arbitrum, Ma
 - ⚛️ Bidirectional atomic swaps for trustless token exchanges
 - 📈 Real-time market insights for informed decisions
 - 🤖 Intelligent AI assistance for navigating blockchain interoperability
+- **🔥 Advanced Mantle ecosystem integration with specialized DeFi protocols**
+- **🤖 NEBULA AI integration for natural language DeFi operations**
 
 ## 🏺 The MictlAI Legend
 
@@ -36,9 +41,112 @@ Harnessing the power of artificial intelligence, MictlAI navigates the intricaci
 
 Where traditional bridges have failed through hacks and exploits, MictlAI's atomic swap mechanism creates a direct, trustless pathway between blockchain worlds—a pathway guarded by the wisdom of AI and the security of decentralized protocols.
 
+## 🚀 MictlAI: The Mantle Quest
+
+**[MictlAI: The Mantle Quest](https://github.com/0xOucan/MictlAI-MantleQuest)** is an enhanced version that includes all the same core functionalities as the original MictlAI plus exciting new integrations specifically designed for the Mantle ecosystem. This Cookathon project showcases the full potential of AI-powered DeFi interactions on Mantle network.
+
+### 🆕 Mantle-Specific Features
+- **🤖 NEBULA AI Integration**: Advanced conversational AI for DeFi operations
+- **🌳 Treehouse Protocol**: cmETH staking and yield optimization
+- **🏦 Lendle Protocol**: MNT/USDT lending and borrowing with collateral management
+- **🔄 Merchant Moe**: Advanced DEX operations and optimal swap routing
+- **📊 Portfolio Analysis**: AI-powered yield strategy recommendations
+
+## 🤖 NEBULA AI Integration
+
+The **NEBULA AI integration** is our flagship feature for the Mantle network, powered by thirdweb's advanced AI platform. This integration transforms how users interact with DeFi protocols through natural language processing.
+
+### 🎯 Core Capabilities
+- **🗣️ Natural Language DeFi**: Execute complex operations using plain English commands
+- **📊 Portfolio Analysis**: AI-powered insights about DeFi positions and yield opportunities
+- **💡 Strategy Recommendations**: Personalized optimization suggestions based on portfolio analysis
+- **🔍 Transaction Analysis**: Understand and explain complex DeFi operations
+- **⚡ Real-time Assistance**: Instant help with protocol interactions and troubleshooting
+
+### 🛠️ Technical Implementation
+Located in `src/action-providers/nebula/`, the NEBULA integration includes:
+
+- **nebulaActionProvider.ts**: Main provider with chat, execute, query, and reasoning capabilities
+- **constants.ts**: Configuration for Mantle network (Chain ID: 5000) and API endpoints
+- **schemas.ts**: Zod validation schemas for different AI interaction types
+- **errors.ts**: Comprehensive error handling for AI operations
+- **Session Management**: Intelligent conversation context with 30-minute expiration
+
+### 💬 Example Commands
+```bash
+"Analyze my Mantle portfolio and suggest the best yield strategies"
+"What's my current position in Lendle Protocol?"
+"Help me optimize my cmETH staking in Treehouse"
+"Explain the best way to swap MNT to USDT with minimal slippage"
+"What are the risks of my current DeFi positions?"
+```
+
+## 🛡️ Mantle Network Action Providers
+
+MictlAI includes specialized action providers for comprehensive Mantle ecosystem support:
+
+### 🌳 Treehouse Protocol (`src/action-providers/treehouse-protocol/`)
+**Staking and Yield Optimization on Mantle**
+
+**Features:**
+- **Stake cmETH tokens** with automated approval and staking
+- **Withdraw staked positions** with health factor monitoring
+- **Portfolio tracking** with real-time balance updates
+- **Direct staking operations** combining approval and staking in single transactions
+
+**Key Actions:**
+- `approveForStaking`: Approve cmETH for Treehouse Protocol
+- `stakeTokens`: Stake cmETH tokens for yield generation
+- `directStake`: One-click approve and stake operation
+- `withdrawStaked`: Withdraw staked positions safely
+- `getUserStakingData`: Get comprehensive staking portfolio overview
+
+### 🏦 Lendle Protocol (`src/action-providers/lendle-protocol/`)
+**Lending and Borrowing on Mantle**
+
+**Features:**
+- **Supply MNT as collateral** for lending positions
+- **Deposit USDT** for yield generation and lending
+- **Health factor monitoring** to prevent liquidations
+- **Account data analysis** with portfolio insights
+
+**Key Actions:**
+- `depositMNT`: Supply MNT as collateral with health factor tracking
+- `withdrawMNT`: Withdraw MNT collateral safely
+- `approveUSDT`: Approve USDT for Lendle operations
+- `depositUSDT`: Deposit USDT for yield generation
+- `getUserAccountData`: Comprehensive account analysis
+
+### 🔄 Merchant Moe (`src/action-providers/merchant-moe/`)
+**Advanced DEX Operations on Mantle**
+
+**Features:**
+- **Swap MNT ⟷ USDT** with optimal routing and slippage protection
+- **Dynamic route calculation** for best execution prices
+- **Automated token approvals** for seamless trading experience
+- **Real-time price impact analysis** and slippage management
+
+**Key Actions:**
+- `swapMntToUsdt`: Swap MNT to USDT with optimal routing
+- `swapUsdtToMnt`: Swap USDT to MNT with price protection
+- `approveToken`: Approve tokens for DEX operations
+
 ## 🚀 Recent Improvements
 
 We've implemented several significant improvements to our platform:
+
+### 🤖 NEBULA AI Integration
+- ✅ **Advanced AI Assistant**: Complete integration with thirdweb's Nebula AI platform
+- 🗣️ **Natural Language Processing**: Execute DeFi operations through conversational interfaces
+- 📊 **Portfolio Analysis**: AI-powered insights and yield optimization recommendations
+- 🔍 **Transaction Explanations**: Understand complex DeFi operations with AI analysis
+- ⚡ **Real-time Assistance**: Instant help with Mantle protocol interactions
+
+### 🛡️ Mantle Ecosystem Integration
+- ✅ **Treehouse Protocol**: Complete cmETH staking with yield optimization
+- 🏦 **Lendle Protocol**: MNT/USDT lending and borrowing with health monitoring
+- 🔄 **Merchant Moe**: Advanced DEX operations with optimal routing
+- 📈 **Portfolio Management**: Comprehensive DeFi position tracking and analysis
 
 ### 🔮 zkSync Era Integration
 - ✅ **Complete zkSync Support**: Added full integration with zkSync Era network

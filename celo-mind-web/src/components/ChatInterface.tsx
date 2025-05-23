@@ -464,7 +464,7 @@ export default function ChatInterface() {
     // Initialize with a system welcome message
     const welcomeMessage: Message = {
       id: `system-welcome-${Date.now()}`,
-      content: "Welcome to MictlAI! I can help you bridge tokens between networks. How can I assist you today?",
+      content: "🏺 Welcome to MictlAI: The Mantle Quest! 🏺\n\nI'm your AI-powered guide through the blockchain underworld. I can help you:\n\n🤖 **NEBULA AI**: Get intelligent DeFi insights and portfolio analysis\n🌳 **Treehouse Protocol**: Stake cmETH tokens for yield\n🏦 **Lendle Protocol**: Supply MNT and USDT as collateral\n🔄 **Merchant Moe**: Optimal MNT/USDT swaps\n⛓️ **Cross-Chain Bridge**: Transfer assets between Base, Arbitrum, Mantle, and zkSync Era\n\nConnect your wallet and begin your quest! How can I assist you today?",
       sender: 'agent',
       timestamp: Date.now(),
     };

@@ -2,13 +2,17 @@
 
 [![MictlAI Demo Video](https://img.youtube.com/vi/-fRQruMqX_Y/0.jpg)](https://www.youtube.com/watch?v=-fRQruMqX_Y)
 
-> 🏆 **ETH Cinco de Mayo Hackathon Project** - [View Submission](https://taikai.network/ethcdm/hackathons/ethcdm-2/projects/cma9asf3z0fw2u9xxkax97kvm/idea)  
+> 🏆 **Cookathon Project** - [View Submission](https://taikai.network/ethcdm/hackathons/ethcdm-2/projects/cma9asf3z0fw2u9xxkax97kvm/idea)  
 > 🛠️ **Tracks**: Mantle, $MXNB, ZKsync  
 > 📂 **Repository**: [GitHub](https://github.com/0xOucan/MictlAI)
+> 🔥 **Mantle Quest Edition**: [MictlAI: The Mantle Quest](https://github.com/0xOucan/MictlAI-MantleQuest)
 
 ## 📑 Table of Contents
 - [The MictlAI Legend](#-the-mictlai-legend)
+- [MictlAI: The Mantle Quest](#-mictlai-the-mantle-quest)
 - [Features](#-features)
+- [Mantle Network Integrations](#-mantle-network-integrations)
+- [🤖 NEBULA AI Integration](#-nebula-ai-integration)
 - [Architecture](#-architecture)
 - [Getting Started](#-getting-started)
 - [Contract Information](#-contract-information)
@@ -35,11 +39,28 @@ The journey of your tokens—from **Base to Arbitrum, Mantle to zkSync Era**—m
 
 Where **traditional bridges have failed through hacks and exploits**, **💀MictlAI💀**'s atomic swap mechanism creates a **direct, trustless pathway between blockchain worlds**—a pathway guarded by the wisdom of AI and the security of decentralized protocols.
 
+## 🚀 MictlAI: The Mantle Quest
+
+**[MictlAI: The Mantle Quest](https://github.com/0xOucan/MictlAI-MantleQuest)** is an enhanced version of the original MictlAI that includes all the same core functionalities plus exciting new integrations specifically designed for the Mantle ecosystem:
+
+### 🆕 Mantle-Specific Features
+- **🤖 NEBULA AI Integration**: Advanced AI assistant powered by thirdweb's Nebula AI platform
+- **🌳 Treehouse Protocol**: Stake cmETH tokens on Mantle network
+- **🏦 Lendle Protocol**: Lending and borrowing MNT and USDT with collateral management
+- **🔄 Merchant Moe**: Advanced DEX operations for MNT/USDT swaps
+- **🎯 Init Capital**: Yield farming and liquidity optimization strategies
+
+This Mantle Quest edition maintains all the cross-chain bridging capabilities of the original while adding deep Mantle network integration for DeFi operations, yield strategies, and AI-powered portfolio management.
+
 ## 🌟 Features
 
 - 🌉 Seamless cross-chain transfers between Base, Arbitrum, Mantle, and zkSync Era
 - ⚛️ Bidirectional atomic swaps for trustless token exchanges
 - 💬 Natural language AI chat interface for cross-chain operations
+- **🤖 Advanced NEBULA AI Integration for intelligent DeFi assistance**
+- **🌳 Treehouse Protocol staking integration**
+- **🏦 Lendle Protocol lending and borrowing**
+- **🔄 Merchant Moe DEX operations**
 - 👛 External wallet support with secure transaction handling
 - 🔄 Real-time transaction monitoring and status tracking
 - 💰 Real-time wallet balance tracking with USD conversion
@@ -47,6 +68,77 @@ Where **traditional bridges have failed through hacks and exploits**, **💀Mict
 - 🔒 No private key storage - transactions require explicit wallet approval
 - 🤖 Intelligent AI assistance for navigating blockchain interoperability
 - 📈 Real-time market insights for informed decisions
+
+## 🛡️ Mantle Network Integrations
+
+MictlAI provides comprehensive support for the Mantle ecosystem through specialized action providers:
+
+### 🤖 NEBULA AI Integration
+
+**NEBULA AI** is the crown jewel of our Mantle integration, powered by thirdweb's advanced AI platform:
+
+- **🗣️ Natural Language DeFi**: Interact with Mantle protocols using plain English
+- **📊 Portfolio Analysis**: AI-powered insights about your DeFi positions
+- **💡 Strategy Recommendations**: Get personalized yield optimization suggestions
+- **🔍 Transaction Analysis**: Understand complex DeFi operations with AI explanations
+- **⚡ Real-time Assistance**: Instant help with Mantle protocol interactions
+
+#### Example NEBULA Commands:
+```
+"Analyze my Mantle portfolio and suggest optimizations"
+"What's the best yield strategy for my MNT tokens?"
+"Explain my recent Lendle transaction"
+"Help me optimize my Treehouse staking position"
+```
+
+### 🌳 Treehouse Protocol Integration
+- **Stake cmETH tokens** on Mantle network
+- **Automated staking rewards** tracking and optimization
+- **Direct approval and staking** in single transactions
+- **Withdraw staked positions** with health factor monitoring
+
+### 🏦 Lendle Protocol Integration
+- **Supply MNT as collateral** for lending positions
+- **Deposit USDT** for yield generation
+- **Monitor health factors** and liquidation risks
+- **Automated position management** with AI assistance
+
+### 🔄 Merchant Moe Integration
+- **Swap MNT ⟷ USDT** with optimal routing
+- **Dynamic slippage protection** and price impact analysis
+- **Automated token approvals** for seamless trading
+- **Real-time price feeds** and market insights
+
+## 🤖 NEBULA AI Integration
+
+The **NEBULA AI integration** represents a breakthrough in blockchain user experience, bringing conversational AI directly to DeFi operations on Mantle:
+
+### 🎯 Core Capabilities
+- **🗣️ Natural Language Processing**: Chat about blockchain operations in plain English
+- **⚡ Transaction Execution**: Execute complex DeFi operations through conversation
+- **📊 Portfolio Analysis**: AI-powered insights and strategy recommendations
+- **🔍 Real-time Queries**: Query blockchain data using natural language
+- **💡 Strategic Guidance**: Receive AI-generated optimization suggestions
+
+### 🛠️ Technical Features
+- **Chain-Specific**: Optimized for Mantle network (Chain ID: 5000)
+- **Protocol Integration**: Works seamlessly with Lendle, Treehouse, and Merchant Moe
+- **Session Management**: Intelligent conversation context and memory
+- **Error Handling**: Graceful degradation with user-friendly messages
+- **Security**: Secure API integration with no private key exposure
+
+### 💬 Example Interactions
+```
+User: "What's the best way to use my 100 MNT tokens?"
+NEBULA: "I can help optimize your MNT! Here are some strategies:
+1. Supply to Lendle for 8.5% APY as collateral
+2. Swap 50 MNT to USDT on Merchant Moe for diversification
+3. Keep 20 MNT for gas and future opportunities
+Would you like me to execute any of these strategies?"
+
+User: "Yes, supply 80 MNT to Lendle"
+NEBULA: "Perfect! I'll help you supply 80 MNT to Lendle Protocol..."
+```
 
 ## 🏗️ Architecture
 

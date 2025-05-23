@@ -2,7 +2,10 @@
 
 ## 📑 Table of Contents
 - [The MictlAI Legend](#-the-mictlai-legend)
+- [MictlAI: The Mantle Quest](#-mictlai-the-mantle-quest)
 - [Features](#-features)
+- [🤖 NEBULA AI Integration](#-nebula-ai-integration)
+- [Mantle Network Integrations](#-mantle-network-integrations)
 - [Getting Started](#-getting-started)
 - [Backend Integration](#-backend-integration)
 - [Project Structure](#-project-structure)
@@ -24,9 +27,24 @@ The journey of your tokens—from Base to Arbitrum, Mantle to zkSync Era—mirro
 
 Where traditional bridges have failed through hacks and exploits, MictlAI's atomic swap mechanism creates a direct, trustless pathway between blockchain worlds—a pathway guarded by the wisdom of AI and the security of decentralized protocols.
 
+## 🚀 MictlAI: The Mantle Quest
+
+**[MictlAI: The Mantle Quest](https://github.com/0xOucan/MictlAI-MantleQuest)** is an enhanced version that includes all the same core functionalities as the original MictlAI plus exciting new integrations specifically designed for the Mantle ecosystem. This Cookathon project showcases advanced DeFi interactions through AI-powered interfaces.
+
+### 🆕 Mantle-Specific Features
+- **🤖 NEBULA AI Integration**: Conversational AI for DeFi operations on Mantle
+- **🌳 Treehouse Protocol**: cmETH staking interface with yield tracking
+- **🏦 Lendle Protocol**: MNT/USDT lending and borrowing dashboard
+- **🔄 Merchant Moe**: Advanced DEX interface with optimal routing
+- **📊 Portfolio Management**: AI-powered DeFi position analysis
+
 ## 🌟 Features
 
 - 💬 Natural language AI chat interface for cross-chain operations
+- **🤖 Advanced NEBULA AI integration for intelligent DeFi assistance on Mantle**
+- **🌳 Treehouse Protocol staking interface with real-time yield tracking**
+- **🏦 Lendle Protocol lending dashboard with health factor monitoring**
+- **🔄 Merchant Moe DEX interface with optimal swap routing**
 - 👛 External wallet support with secure transaction handling
 - 🔄 Real-time transaction monitoring and status tracking
 - 💰 Real-time wallet balance tracking with USD conversion
@@ -36,6 +54,65 @@ Where traditional bridges have failed through hacks and exploits, MictlAI's atom
 - ⚡ Cross-chain bridging between Base, Arbitrum, Mantle, and zkSync Era networks
 - 🛡️ Enhanced security with no stored private keys
 - 🔌 Network validation and automatic network switching
+
+## 🤖 NEBULA AI Integration
+
+The **NEBULA AI integration** brings conversational AI directly to the MictlAI web interface, transforming how users interact with DeFi protocols on Mantle:
+
+### 🎯 Frontend Features
+- **🗣️ Natural Language Interface**: Chat with AI about DeFi operations using plain English
+- **📊 Visual Portfolio Analysis**: AI-generated insights displayed with interactive charts
+- **💡 Strategy Recommendations**: Visual presentation of yield optimization suggestions
+- **🔍 Transaction Explanations**: AI-powered breakdowns of complex DeFi operations
+- **⚡ Real-time Assistance**: Instant help with protocol interactions and guidance
+
+### 💬 Example Interface Interactions
+The web interface makes NEBULA AI accessible through intuitive chat:
+
+```
+User: "Show me my Mantle portfolio and suggest optimizations"
+🤖 NEBULA: Analyzing your positions across Lendle, Treehouse, and Merchant Moe...
+
+📊 Portfolio Summary:
+• 150 MNT in Lendle (earning 8.5% APY)
+• 5 cmETH in Treehouse (earning 12% APY)
+• 1,000 USDT available for deployment
+
+💡 Optimization Suggestions:
+1. Convert 50 MNT to USDT via Merchant Moe for diversification
+2. Stake additional cmETH in Treehouse for higher yields
+3. Consider using MNT as collateral to borrow and leverage positions
+
+Would you like me to execute any of these strategies?
+```
+
+### 🎨 Visual Integration
+- **Chat Interface**: Seamlessly integrated into the main chat panel
+- **Protocol Cards**: Visual cards showing Mantle protocol integrations
+- **Portfolio Dashboard**: AI-enhanced portfolio overview with recommendations
+- **Transaction Flows**: Visual representation of multi-step DeFi operations
+
+## 🛡️ Mantle Network Integrations
+
+The web interface provides comprehensive support for Mantle ecosystem protocols:
+
+### 🌳 Treehouse Protocol Interface
+- **Staking Dashboard**: Visual overview of cmETH staking positions
+- **Yield Tracking**: Real-time display of staking rewards and APY
+- **One-Click Staking**: Streamlined approve and stake interface
+- **Position Management**: Easy withdrawal and position optimization tools
+
+### 🏦 Lendle Protocol Interface
+- **Lending Dashboard**: Visual overview of MNT and USDT positions
+- **Health Factor Monitor**: Real-time liquidation risk assessment
+- **Collateral Management**: Easy supply and withdrawal interfaces
+- **APY Tracking**: Live display of lending and borrowing rates
+
+### 🔄 Merchant Moe Interface
+- **Swap Interface**: Optimized MNT ⟷ USDT trading with live price feeds
+- **Route Visualization**: Display of optimal swap routing and price impact
+- **Slippage Controls**: Advanced slippage and deadline management
+- **Transaction Tracking**: Real-time swap progress monitoring
 
 ## 🚀 Getting Started
 

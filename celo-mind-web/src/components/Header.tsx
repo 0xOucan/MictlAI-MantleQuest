@@ -65,7 +65,10 @@ const Header: React.FC<HeaderProps> = ({ toggleDarkMode, isDarkMode }) => {
     <header className="sticky top-0 z-10 flex items-center justify-between p-4 bg-mictlai-obsidian border-b border-mictlai-gold/30 backdrop-blur">
         <div className="flex items-center space-x-2">
         {skullIcon}
-        <h1 className="text-xl font-aztec font-bold text-mictlai-gold">MictlAI</h1>
+        <div className="flex flex-col">
+          <h1 className="text-xl font-aztec font-bold text-mictlai-gold">MictlAI</h1>
+          <span className="text-xs font-aztec text-mictlai-turquoise">The Mantle Quest</span>
+        </div>
         </div>
 
       <div className="flex items-center space-x-3">

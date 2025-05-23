@@ -31,38 +31,46 @@ export default function InfoPanel({ onActivateAgent }: InfoPanelProps) {
             <div className="absolute top-0 left-0 w-full h-full bg-mictlai-turquoise opacity-10 animate-pulse"></div>
           </div>
           <h1 className="text-4xl font-pixel font-bold text-mictlai-gold mb-2 tracking-wider">MICTLAI</h1>
-          <h2 className="text-xl text-mictlai-bone/80 mb-8 font-pixel">BRIDGING WORLDS BEYOND TIME</h2>
+          <h2 className="text-xl text-mictlai-bone/80 mb-4 font-pixel">THE MANTLE QUEST</h2>
+          <h3 className="text-lg text-mictlai-turquoise mb-8 font-pixel">BRIDGING WORLDS BEYOND TIME</h3>
           
           <button 
             onClick={onActivateAgent}
             className="pixel-btn flex items-center space-x-2 mx-auto px-6 py-3 font-pixel"
           >
             <PlayIcon className="h-5 w-5" />
-            <span>GET STARTED</span>
+            <span>START YOUR QUEST</span>
           </button>
         </div>
 
         {/* Feature Highlights */}
-        <div className="grid grid-cols-1 md:grid-cols-3 border-t-3 border-mictlai-gold/50">
+        <div className="grid grid-cols-1 md:grid-cols-4 border-t-3 border-mictlai-gold/50">
           <div className="p-6 border-b-3 md:border-b-0 md:border-r-3 border-mictlai-gold/50">
-            <div className="text-2xl mb-2 pixel-pulse">⛓️</div>
-            <h3 className="font-pixel font-bold text-mictlai-gold text-lg mb-2">CROSS-CHAIN BRIDGE</h3>
+            <div className="text-2xl mb-2 pixel-pulse">🤖</div>
+            <h3 className="font-pixel font-bold text-mictlai-gold text-lg mb-2">NEBULA AI</h3>
             <p className="text-mictlai-bone/70 font-pixel text-sm">
-              TRANSFER ASSETS BETWEEN BASE, ARBITRUM, MANTLE, AND ZKSYNC ERA NETWORKS
+              ADVANCED AI ASSISTANT FOR DEFI OPERATIONS AND NATURAL LANGUAGE BLOCKCHAIN INTERACTIONS
             </p>
           </div>
           <div className="p-6 border-b-3 md:border-b-0 md:border-r-3 border-mictlai-gold/50">
-            <div className="text-2xl mb-2 pixel-pulse">💰</div>
-            <h3 className="font-pixel font-bold text-mictlai-gold text-lg mb-2">ATOMIC SWAPS</h3>
+            <div className="text-2xl mb-2 pixel-pulse">🌳</div>
+            <h3 className="font-pixel font-bold text-mictlai-gold text-lg mb-2">TREEHOUSE PROTOCOL</h3>
             <p className="text-mictlai-bone/70 font-pixel text-sm">
-              EXECUTE TRUSTLESS CROSS-CHAIN TOKEN SWAPS WITHOUT INTERMEDIARIES
+              STAKE CMETH TOKENS ON MANTLE FOR OPTIMIZED YIELD GENERATION
+            </p>
+          </div>
+          <div className="p-6 border-b-3 md:border-b-0 md:border-r-3 border-mictlai-gold/50">
+            <div className="text-2xl mb-2 pixel-pulse">🏦</div>
+            <h3 className="font-pixel font-bold text-mictlai-gold text-lg mb-2">LENDLE PROTOCOL</h3>
+            <p className="text-mictlai-bone/70 font-pixel text-sm">
+              SUPPLY MNT AND USDT AS COLLATERAL FOR LENDING AND BORROWING OPERATIONS
             </p>
           </div>
           <div className="p-6">
-            <div className="text-2xl mb-2 pixel-pulse">🧠</div>
-            <h3 className="font-pixel font-bold text-mictlai-gold text-lg mb-2">NEBULA AI</h3>
+            <div className="text-2xl mb-2 pixel-pulse">🔄</div>
+            <h3 className="font-pixel font-bold text-mictlai-gold text-lg mb-2">MERCHANT MOE</h3>
             <p className="text-mictlai-bone/70 font-pixel text-sm">
-              ADVANCED AI ANALYSIS FOR DEFI STRATEGIES AND BLOCKCHAIN INSIGHTS
+              OPTIMAL MNT/USDT SWAPS WITH ADVANCED ROUTING AND SLIPPAGE PROTECTION
             </p>
           </div>
         </div>
@@ -70,36 +78,52 @@ export default function InfoPanel({ onActivateAgent }: InfoPanelProps) {
 
       {/* Description */}
       <section className="mt-10 px-4 md:px-8 py-8 bg-black border-3 border-mictlai-gold/60 shadow-pixel-lg pixel-panel">
-        <h2 className="text-2xl font-pixel font-bold text-mictlai-gold mb-4">ABOUT MICTLAI</h2>
+        <h2 className="text-2xl font-pixel font-bold text-mictlai-gold mb-4">ABOUT MICTLAI: THE MANTLE QUEST</h2>
         <div className="pixel-divider"></div>
         <p className="mb-4 text-mictlai-bone/80 font-pixel text-sm">
           IN THE ANCIENT AZTEC BELIEF SYSTEM, MICTLANTECUHTLI RULED THE UNDERWORLD, MICTLAN — A REALM WHERE SOULS JOURNEYED AFTER DEATH. 
-          TODAY, IN THE DIGITAL AGE, MICTLAI EMERGES AS A GUARDIAN OF THE DECENTRALIZED WORLD, FACILITATING SEAMLESS 
-          INTERACTIONS BETWEEN DISPARATE BLOCKCHAIN REALMS.
+          TODAY, IN THE DIGITAL AGE, MICTLAI EMERGES AS A GUARDIAN OF THE DECENTRALIZED WORLD, WITH SPECIAL FOCUS ON THE MANTLE ECOSYSTEM.
         </p>
         <p className="mb-4 text-mictlai-bone/80 font-pixel text-sm">
-          HARNESSING THE POWER OF AI AND THE SECURITY OF EVM-COMPATIBLE WALLETS, MICTLAI ACTS AS AN AI-DRIVEN BRIDGE, 
-          ENABLING TRUSTLESS, CONTRACT-FREE EXCHANGES ACROSS MULTIPLE BLOCKCHAINS.
+          THIS COOKATHON PROJECT SHOWCASES THE FULL POTENTIAL OF AI-POWERED DEFI INTERACTIONS, COMBINING ALL ORIGINAL CROSS-CHAIN 
+          FUNCTIONALITIES WITH ADVANCED MANTLE NETWORK INTEGRATIONS INCLUDING NEBULA AI, TREEHOUSE PROTOCOL, LENDLE PROTOCOL, AND MERCHANT MOE.
         </p>
         
-        <h3 className="text-xl font-pixel font-bold text-mictlai-gold mt-6 mb-3">SUPPORTED NETWORKS:</h3>
+        <h3 className="text-xl font-pixel font-bold text-mictlai-gold mt-6 mb-3">🤖 NEBULA AI POWERED INTERACTIONS:</h3>
+        <div className="pixel-divider"></div>
+        <ul className="space-y-3 text-mictlai-bone/80 font-pixel text-sm mb-6">
+          <li className="flex items-start">
+            <span className="inline-block mr-2 text-mictlai-turquoise">▸</span>
+            <span><span className="font-medium text-mictlai-turquoise">NATURAL LANGUAGE DEFI:</span> EXECUTE COMPLEX OPERATIONS USING PLAIN ENGLISH</span>
+          </li>
+          <li className="flex items-start">
+            <span className="inline-block mr-2 text-mictlai-turquoise">▸</span>
+            <span><span className="font-medium text-mictlai-turquoise">PORTFOLIO ANALYSIS:</span> AI-POWERED INSIGHTS AND YIELD OPTIMIZATION</span>
+          </li>
+          <li className="flex items-start">
+            <span className="inline-block mr-2 text-mictlai-turquoise">▸</span>
+            <span><span className="font-medium text-mictlai-turquoise">STRATEGY RECOMMENDATIONS:</span> PERSONALIZED DEFI STRATEGY SUGGESTIONS</span>
+          </li>
+        </ul>
+        
+        <h3 className="text-xl font-pixel font-bold text-mictlai-gold mt-6 mb-3">SUPPORTED NETWORKS & PROTOCOLS:</h3>
         <div className="pixel-divider"></div>
         <ul className="space-y-4 text-mictlai-bone/80 font-pixel text-sm">
           <li className="flex items-start">
             <span className="inline-block mr-2 text-mictlai-gold">▸</span>
-            <span><span className="font-medium text-mictlai-gold">BASE NETWORK:</span> TRANSFER XOC TOKENS TO ARBITRUM</span>
+            <span><span className="font-medium text-mictlai-gold">BASE NETWORK:</span> TRANSFER XOC TOKENS TO ARBITRUM, MANTLE, AND ZKSYNC ERA</span>
           </li>
           <li className="flex items-start">
             <span className="inline-block mr-2 text-mictlai-gold">▸</span>
-            <span><span className="font-medium text-mictlai-gold">ARBITRUM NETWORK:</span> TRANSFER MXNB TOKENS TO BASE</span>
+            <span><span className="font-medium text-mictlai-gold">ARBITRUM NETWORK:</span> TRANSFER MXNB TOKENS TO BASE, MANTLE, AND ZKSYNC ERA</span>
           </li>
           <li className="flex items-start">
             <span className="inline-block mr-2 text-mictlai-gold">▸</span>
-            <span><span className="font-medium text-mictlai-gold">MANTLE NETWORK:</span> BRIDGE ASSETS BETWEEN MANTLE AND OTHER NETWORKS, STAKE CMETH IN TREEHOUSE PROTOCOL, SUPPLY MNT AND USDT AS COLLATERAL IN LENDLE PROTOCOL, ACCESS NEBULA AI FOR ADVANCED DEFI ANALYSIS AND NATURAL LANGUAGE BLOCKCHAIN INSIGHTS</span>
+            <span><span className="font-medium text-mictlai-gold">MANTLE NETWORK:</span> FULL ECOSYSTEM INTEGRATION WITH NEBULA AI, TREEHOUSE PROTOCOL STAKING, LENDLE PROTOCOL LENDING/BORROWING, MERCHANT MOE DEX OPERATIONS, AND CROSS-CHAIN BRIDGING</span>
           </li>
           <li className="flex items-start">
             <span className="inline-block mr-2 text-mictlai-gold">▸</span>
-            <span><span className="font-medium text-mictlai-gold">ZKSYNC ERA:</span> TRANSFER USDT TOKENS TO AND FROM OTHER NETWORKS</span>
+            <span><span className="font-medium text-mictlai-gold">ZKSYNC ERA:</span> TRANSFER USDT TOKENS TO AND FROM ALL SUPPORTED NETWORKS</span>
           </li>
         </ul>
         
@@ -108,7 +132,7 @@ export default function InfoPanel({ onActivateAgent }: InfoPanelProps) {
             onClick={onActivateAgent}
             className="pixel-btn px-6 py-3 font-pixel"
           >
-            EXPLORE MICTLAI
+            BEGIN THE MANTLE QUEST
           </button>
         </div>
       </section>
