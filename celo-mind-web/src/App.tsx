@@ -7,6 +7,7 @@ import WalletConnect, { WalletStatusBar } from './components/WalletConnect';
 import { PrivyProvider } from './providers/PrivyProvider';
 import { WalletProvider, useWallet } from './providers/WalletContext';
 import TransactionMonitor from './components/TransactionMonitor';
+import { ThreeBackground } from './components/ThreeScene';
 import { DEFAULT_NETWORK } from './config';
 
 // Component to ensure network synchronization on app start
@@ -27,6 +28,7 @@ const NetworkInitializer: React.FC = () => {
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [isAgentActive, setIsAgentActive] = useState(false);
+  const [show3DBackground, setShow3DBackground] = useState(true); // State to toggle 3D background
 
   // Toggle dark mode
   const toggleDarkMode = () => {
@@ -40,7 +42,13 @@ export default function App() {
     localStorage.setItem('mictlai-theme', darkMode ? 'light' : 'dark');
   };
 
-  // Initialize theme from localStorage on mount
+  // Toggle 3D background
+  const toggle3DBackground = () => {
+    setShow3DBackground(!show3DBackground);
+    localStorage.setItem('mictlai-3d-enabled', (!show3DBackground).toString());
+  };
+
+  // Initialize theme and 3D background preference from localStorage on mount
   useEffect(() => {
     // Check for saved theme or use system preference
     const savedTheme = localStorage.getItem('mictlai-theme');
@@ -53,15 +61,22 @@ export default function App() {
       setDarkMode(false);
       document.documentElement.classList.remove('dark');
     }
+
+    // Check for 3D background preference
+    const saved3DPref = localStorage.getItem('mictlai-3d-enabled');
+    if (saved3DPref !== null) {
+      setShow3DBackground(saved3DPref === 'true');
+    }
   }, []);
 
   return (
     <PrivyProvider>
       <WalletProvider>
         <NetworkInitializer />
-        <div className="min-h-screen bg-mictlai-obsidian text-mictlai-bone font-pixel">
+        {show3DBackground && <ThreeBackground />}
+        <div className="min-h-screen bg-mictlai-obsidian text-mictlai-bone font-pixel relative z-10">
           {/* Main header - Pixel Art Style */}
-          <header className="bg-black border-b-3 border-mictlai-gold px-4 py-3 shadow-pixel-lg">
+          <header className="bg-black bg-opacity-70 border-b-3 border-mictlai-gold px-4 py-3 shadow-pixel-lg">
             <div className="container mx-auto flex justify-between items-center">
               {/* Branding Section - Left */}
               <div className="flex items-center">
@@ -92,6 +107,16 @@ export default function App() {
               
               {/* Controls Section - Right */}
               <div className="flex items-center space-x-4">
+                <button 
+                  onClick={toggle3DBackground}
+                  className="p-1.5 rounded-none bg-mictlai-obsidian border-2 border-mictlai-gold hover:bg-mictlai-blood text-mictlai-bone shadow-pixel"
+                  aria-label={show3DBackground ? 'Disable 3D Background' : 'Enable 3D Background'}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="square" strokeLinejoin="miter" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1V3m0 18v-6M4 15h8v4H4v-4zm14-8V3h-8v4h8z" />
+                  </svg>
+                </button>
+
                 <WalletConnect />
                 
                 <button 
@@ -136,7 +161,7 @@ export default function App() {
           {/* Transaction monitoring component */}
           <TransactionMonitor />
           
-          <footer className="bg-black py-3 text-center text-mictlai-gold/70 text-sm border-t-3 border-mictlai-gold/20">
+          <footer className="bg-black bg-opacity-70 py-3 text-center text-mictlai-gold/70 text-sm border-t-3 border-mictlai-gold/20">
             <p className="container mx-auto font-pixel">⛧ MICTLAI - BRIDGING WORLDS BEYOND TIME ⛧</p>
           </footer>
         </div>
