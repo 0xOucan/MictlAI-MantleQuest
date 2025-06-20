@@ -1,12 +1,15 @@
 import React from 'react';
 import { PlayIcon, SkullIcon, FireIcon, CoinIcon } from './Icons';
 import { MetallicPanel } from './ThreeScene';
+import { useWallet } from '../providers/WalletContext';
 
 interface InfoPanelProps {
   onActivateAgent: () => void;
 }
 
 export default function InfoPanel({ onActivateAgent }: InfoPanelProps) {
+  const { isConnected, connectedAddress } = useWallet();
+
   return (
     <div className="max-w-4xl mx-auto">
       <MetallicPanel className="overflow-hidden">
@@ -35,13 +38,29 @@ export default function InfoPanel({ onActivateAgent }: InfoPanelProps) {
           <h2 className="text-xl text-mictlai-bone/80 mb-4 font-pixel">THE MANTLE QUEST</h2>
           <h3 className="text-lg text-mictlai-turquoise mb-8 font-pixel">BRIDGING WORLDS BEYOND TIME</h3>
           
-          <button 
-            onClick={onActivateAgent}
-            className="pixel-btn flex items-center space-x-2 mx-auto px-6 py-3 font-pixel"
-          >
-            <PlayIcon className="h-5 w-5" />
-            <span>START YOUR QUEST</span>
-          </button>
+          {isConnected ? (
+            <button 
+              onClick={onActivateAgent}
+              className="pixel-btn flex items-center space-x-2 mx-auto px-6 py-3 font-pixel"
+            >
+              <PlayIcon className="h-5 w-5" />
+              <span>START YOUR QUEST</span>
+            </button>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-mictlai-bone/80 font-pixel text-sm px-4">
+                CONNECT YOUR WALLET TO BEGIN YOUR JOURNEY THROUGH THE BLOCKCHAIN UNDERWORLD
+              </p>
+              <MetallicPanel variant="gold" iridescent={true} className="inline-block">
+                <button 
+                  onClick={() => document.getElementById('connect-wallet-btn')?.click()}
+                  className="px-6 py-3 font-pixel font-bold"
+                >
+                  CONNECT WALLET
+                </button>
+              </MetallicPanel>
+            </div>
+          )}
         </div>
 
         {/* Feature Highlights */}
@@ -133,14 +152,25 @@ export default function InfoPanel({ onActivateAgent }: InfoPanelProps) {
         </MetallicPanel>
         
         <div className="mt-8 text-center">
-          <MetallicPanel variant="gold" iridescent={true} className="inline-block">
-            <button 
-              onClick={onActivateAgent}
-              className="px-6 py-3 font-pixel font-bold"
-            >
-              BEGIN THE MANTLE QUEST
-            </button>
-          </MetallicPanel>
+          {isConnected ? (
+            <MetallicPanel variant="gold" iridescent={true} className="inline-block">
+              <button 
+                onClick={onActivateAgent}
+                className="px-6 py-3 font-pixel font-bold"
+              >
+                BEGIN THE MANTLE QUEST
+              </button>
+            </MetallicPanel>
+          ) : (
+            <MetallicPanel variant="turquoise" className="inline-block">
+              <button 
+                onClick={() => document.getElementById('connect-wallet-btn')?.click()}
+                className="px-6 py-3 font-pixel font-bold"
+              >
+                CONNECT YOUR WALLET
+              </button>
+            </MetallicPanel>
+          )}
         </div>
       </MetallicPanel>
     </div>

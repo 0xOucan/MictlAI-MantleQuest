@@ -32,6 +32,7 @@ export default function WalletConnect() {
   if (!isConnected) {
     return (
       <button 
+        id="connect-wallet-btn"
         onClick={connect} 
         className="pixel-btn text-sm font-pixel"
       >

@@ -27,8 +27,9 @@ const NetworkInitializer: React.FC = () => {
 
 export default function App() {
   const [darkMode, setDarkMode] = useState(true);
-  const [isAgentActive, setIsAgentActive] = useState(false);
-  const [show3DBackground, setShow3DBackground] = useState(true); // State to toggle 3D background
+  const [show3DBackground, setShow3DBackground] = useState(true);
+  const [viewMode, setViewMode] = useState<'welcome' | 'dashboard'>('welcome');
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Toggle dark mode
   const toggleDarkMode = () => {
@@ -46,6 +47,19 @@ export default function App() {
   const toggle3DBackground = () => {
     setShow3DBackground(!show3DBackground);
     localStorage.setItem('mictlai-3d-enabled', (!show3DBackground).toString());
+  };
+
+  // Handle UI mode change based on activation and wallet connection
+  const handleActivateAgent = () => {
+    setIsTransitioning(true);
+    
+    // Short delay for animation effect
+    setTimeout(() => {
+      setViewMode('dashboard');
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 300);
   };
 
   // Initialize theme and 3D background preference from localStorage on mount
@@ -68,6 +82,44 @@ export default function App() {
       setShow3DBackground(saved3DPref === 'true');
     }
   }, []);
+
+  // To check if the user should automatically see the dashboard
+  const MainContent = () => {
+    const { isConnected } = useWallet();
+    
+    // Auto-switch to dashboard mode when wallet connects and we're in welcome mode
+    useEffect(() => {
+      if (isConnected && viewMode === 'welcome') {
+        handleActivateAgent();
+      }
+    }, [isConnected]);
+
+    return (
+      <div className="container mx-auto px-4 py-6">
+        <div className={`transition-all duration-300 ${isTransitioning ? 'opacity-0 translate-y-5' : 'opacity-100 translate-y-0'}`}>
+          {viewMode === 'welcome' ? (
+            <InfoPanel onActivateAgent={handleActivateAgent} />
+          ) : (
+            <div className="fade-in">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 fade-in delay-100">
+                  <ChatInterface />
+                </div>
+                <div className="lg:col-span-1 space-y-6">
+                  <div className="fade-in delay-200">
+                    <WalletBalances />
+                  </div>
+                  <div className="fade-in delay-300">
+                    <LiquidityMonitor />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <PrivyProvider>
@@ -142,20 +194,8 @@ export default function App() {
           <WalletStatusBar />
           
           {/* Main content */}
-          <main className="container mx-auto px-4 py-6">
-            {!isAgentActive ? (
-              <InfoPanel onActivateAgent={() => setIsAgentActive(true)} />
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <ChatInterface />
-                </div>
-                <div className="lg:col-span-1 space-y-6">
-                  <WalletBalances />
-                  <LiquidityMonitor />
-                </div>
-              </div>
-            )}
+          <main className="container mx-auto">
+            <MainContent />
           </main>
           
           {/* Transaction monitoring component */}
